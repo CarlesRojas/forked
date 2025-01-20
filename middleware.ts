@@ -1,11 +1,11 @@
-import { CookieName } from '@/constant/Cookie';
-import { DEFAULT_LANGUAGE, Language, LANGUAGES } from '@/locale/language';
-import acceptLanguage from 'accept-language';
-import { NextRequest, NextResponse } from 'next/server';
+import { CookieName } from "@/constant/Cookie";
+import { DEFAULT_LANGUAGE, Language, LANGUAGES } from "@/locale/language";
+import acceptLanguage from "accept-language";
+import { NextRequest, NextResponse } from "next/server";
 
 acceptLanguage.languages(LANGUAGES);
 
-const excludedPaths = ['api', '_next/static', '_next/image', 'asset', 'favicon.ico', '.json', '.png', '.ico', '.svg'];
+const excludedPaths = ["api", "_next/static", "_next/image", "asset", "favicon.ico", ".json", ".png", ".ico", ".svg"];
 
 const getLanguageInCookie = (request: NextRequest) => {
     const cookie = request.cookies.get(CookieName.LANGUAGE);
@@ -22,7 +22,7 @@ const getLanguageInPathname = (pathname: string) => {
 };
 
 const isLanguageInPathname = (pathname: string) => {
-    return !!getLanguageInPathname(pathname) || pathname.startsWith('/_next');
+    return !!getLanguageInPathname(pathname) || pathname.startsWith("/_next");
 };
 
 export function middleware(request: NextRequest) {
@@ -32,7 +32,7 @@ export function middleware(request: NextRequest) {
     const language =
         getLanguageInPathname(path) ??
         getLanguageInCookie(request) ??
-        (acceptLanguage.get(request.headers.get('Accept-Language')) as Language) ??
+        (acceptLanguage.get(request.headers.get("Accept-Language")) as Language) ??
         DEFAULT_LANGUAGE;
 
     if (!isLanguageInPathname(path)) return NextResponse.redirect(new URL(`/${language}${path}`, request.url));

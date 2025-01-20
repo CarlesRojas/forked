@@ -11,7 +11,7 @@ const Piece = ({ fen, coords }: Props) => {
 
     return (
         <div
-            className="relative flex size-full items-center justify-center"
+            className="pointer-events-none relative flex size-full items-center justify-center select-none"
             style={{ gridColumnStart: coords.y + 1, gridRowStart: 8 - coords.x }}
         >
             <img className="h-[70%] w-[70%]" src={PieceImage[fen]} alt={`${fen} piece`} />

@@ -62,8 +62,7 @@ export type LastMove = {
 
 type KingChecked = {
     isInCheck: true;
-    x: number;
-    y: number;
+    coords: Coords;
 };
 
 type KingNotChecked = {
@@ -83,3 +82,14 @@ type GameState = {
 export type GameHistory = GameState[];
 
 export const columns = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
+
+type SquareWithPiece = {
+    piece: Fen;
+    coords: Coords;
+};
+
+type SquareWithoutPiece = {
+    piece: null;
+};
+
+export type SelectedSquare = SquareWithPiece | SquareWithoutPiece;

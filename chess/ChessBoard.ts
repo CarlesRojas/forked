@@ -1,4 +1,4 @@
-import { FenConverter } from "@/chess/fen";
+import { FenConverter } from "@/chess/FenConverter";
 import { Bishop } from "@/chess/piece/Bishop";
 import { King } from "@/chess/piece/King";
 import { Knight } from "@/chess/piece/Knight";
@@ -159,14 +159,16 @@ export class ChessBoard {
 
                         const attackedPiece: Piece | null = this.chessBoard[newX][newY];
                         if (attackedPiece instanceof King && attackedPiece.color === playerColor) {
-                            if (checkingCurrentPosition) this._checkState = { isInCheck: true, x: newX, y: newY };
+                            if (checkingCurrentPosition)
+                                this._checkState = { isInCheck: true, coords: { x: newX, y: newY } };
                             return true;
                         }
                     } else {
                         while (this.areCoordsValid({ x: newX, y: newY })) {
                             const attackedPiece: Piece | null = this.chessBoard[newX][newY];
                             if (attackedPiece instanceof King && attackedPiece.color === playerColor) {
-                                if (checkingCurrentPosition) this._checkState = { isInCheck: true, x: newX, y: newY };
+                                if (checkingCurrentPosition)
+                                    this._checkState = { isInCheck: true, coords: { x: newX, y: newY } };
                                 return true;
                             }
 

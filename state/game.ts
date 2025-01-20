@@ -1,4 +1,4 @@
-import { ChessBoard } from "@/chess/board";
+import { ChessBoard } from "@/chess/ChessBoard";
 import { atom } from "jotai";
 
-export const boardAtom = atom(new ChessBoard());
+export const chessBoardAtom = atom(new ChessBoard());

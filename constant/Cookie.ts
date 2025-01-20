@@ -1,3 +1,3 @@
 export enum CookieName {
-    LANGUAGE = 'FORKED_LANGUAGE'
+    LANGUAGE = "FORKED_LANGUAGE",
 }
