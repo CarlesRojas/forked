@@ -1,12 +1,11 @@
-import { PageProps } from '@/app/[language]/layout';
-import { getTranslation } from '@/locale/getTranslation';
+import Board from "@/component/Board";
 
-const Home = async ({ params }: PageProps) => {
-    const { language } = await params;
-    const t = getTranslation(language);
-    console.log(t);
-
-    return <main className="size-full flex items-center justify-center text-3xl">Forked</main>;
+const Home = async () => {
+    return (
+        <div className="relative h-full w-full p-6">
+            <Board />
+        </div>
+    );
 };
 
 export default Home;

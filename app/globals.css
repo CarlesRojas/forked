@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @variant mouse (@media (hover: hover));
 
@@ -30,4 +30,7 @@
     --color-trout-800: #3e434e;
     --color-trout-900: #373b43;
     --color-trout-950: #25272c;
+
+    --color-white-square: #a0b2cb;
+    --color-black-square: #8192a9;
 }

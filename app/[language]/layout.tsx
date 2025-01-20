@@ -1,12 +1,13 @@
-import { Language } from '@/locale/language';
-import type { Metadata } from 'next';
-import { Kode_Mono as Kode } from 'next/font/google';
-import { ReactNode } from 'react';
-import '../globals.css';
+import { Language } from "@/locale/language";
+import JotaiProvider from "@/provider/JotaiProvider";
+import type { Metadata } from "next";
+import { Kode_Mono as Kode } from "next/font/google";
+import { ReactNode } from "react";
+import "../globals.css";
 
 const kode = Kode({
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700']
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
 });
 
 export interface PageProps {
@@ -20,7 +21,7 @@ export interface LayoutProps {
 }
 
 export const metadata: Metadata = {
-    title: 'Forked'
+    title: "Forked",
 };
 
 const RootLayout = async ({ children, params }: Readonly<LayoutProps>) => {
@@ -29,9 +30,11 @@ const RootLayout = async ({ children, params }: Readonly<LayoutProps>) => {
     return (
         <html
             lang={language}
-            className="h-dvh max-h-dvh min-h-dvh w-dvw max-w-dvw min-w-dvw overflow-hidden bg-trout-700 text-white"
+            className="bg-trout-700 h-dvh max-h-dvh min-h-dvh w-dvw max-w-dvw min-w-dvw overflow-hidden text-white"
         >
-            <body className={`${kode.className} size-full overflow-hidden`}>{children}</body>
+            <body className={`${kode.className} relative size-full overflow-hidden`}>
+                <JotaiProvider>{children}</JotaiProvider>
+            </body>
         </html>
     );
 };
