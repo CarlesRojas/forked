@@ -31,6 +31,7 @@ const RootLayout = async ({ children, params }: Readonly<LayoutProps>) => {
         <html
             lang={language}
             className="bg-trout-700 h-dvh max-h-dvh min-h-dvh w-dvw max-w-dvw min-w-dvw overflow-hidden text-white"
+            suppressHydrationWarning
         >
             <body className={`${kode.className} relative size-full overflow-hidden`}>
                 <JotaiProvider>{children}</JotaiProvider>
