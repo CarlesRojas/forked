@@ -1,9 +1,9 @@
 "use client";
-import { useRef } from "react";
 
 import { ChessBoard } from "@/chess/ChessBoard";
 import { CheckState, Color, Coords, Fen, LastMove, SelectedSquare } from "@/chess/type";
 import Piece from "@/component/Piece";
+import PromotionDialog from "@/component/PromotionDialog";
 import Tile from "@/component/Tile";
 import { chessBoardAtom } from "@/state/game";
 import { useAtomValue } from "jotai";
@@ -20,13 +20,12 @@ const Board = () => {
 
     const [isPromotionActive, setIsPromotionActive] = useState<boolean>(false);
     const [promotionCoords, setPromotionCoords] = useState<Coords | null>(null);
-    const [promotedPiece, setPromotedPiece] = useState<Fen | null>(null);
 
-    const promotionPieces = useRef<Fen[]>(
-        chessBoard.playerColor === Color.WHITE
-            ? [Fen.WHITE_KNIGHT, Fen.WHITE_BISHOP, Fen.WHITE_ROOK, Fen.WHITE_QUEEN]
-            : [Fen.BLACK_KNIGHT, Fen.BLACK_BISHOP, Fen.BLACK_ROOK, Fen.BLACK_QUEEN],
-    );
+    const getPromotionOptions = () => {
+        return chessBoard.playerColor === Color.WHITE
+            ? [Fen.WHITE_QUEEN, Fen.WHITE_ROOK, Fen.WHITE_BISHOP, Fen.WHITE_KNIGHT]
+            : [Fen.BLACK_QUEEN, Fen.BLACK_ROOK, Fen.BLACK_BISHOP, Fen.BLACK_KNIGHT];
+    };
 
     const isSquareDark = (coords: Coords) => {
         return ChessBoard.isSquareDark(coords);
@@ -70,7 +69,6 @@ const Board = () => {
 
         if (isPromotionActive) {
             setIsPromotionActive(false);
-            setPromotedPiece(null);
             setPromotionCoords(null);
         }
     };
@@ -124,14 +122,13 @@ const Board = () => {
         }
 
         const { coords: prevCoords } = selectedSquare;
-        updateBoard(prevCoords, newCoords, promotedPiece);
+        updateBoard(prevCoords, newCoords, null);
     };
 
     const promotePiece = (piece: Fen) => {
         if (!promotionCoords || !selectedSquare.piece) return;
-        setPromotedPiece(piece);
         const { coords: prevCoords } = selectedSquare;
-        updateBoard(prevCoords, promotionCoords, promotedPiece);
+        updateBoard(prevCoords, promotionCoords, piece);
     };
 
     return (
@@ -150,7 +147,6 @@ const Board = () => {
                             isSquareChecked={isSquareChecked}
                             isSquarePromotionSquare={isSquarePromotionSquare}
                             onTileClicked={(coords) => {
-                                console.log("clicked", coords);
                                 selectPiece(coords);
                                 placePiece(coords);
                             }}
@@ -159,14 +155,17 @@ const Board = () => {
                 )}
             </div>
 
-            <div
-                className="pointer-events-none absolute inset-0 grid grid-cols-8 grid-rows-8 select-none"
-                style={{ imageRendering: "pixelated" }}
-            >
+            <div className="pointer-events-none absolute inset-0 grid grid-cols-8 grid-rows-8 select-none">
                 {chessBoardView.map((row, x) =>
                     row.map((fen, y) => <Piece key={`${x}-${y}`} coords={{ x, y }} fen={fen} />),
                 )}
             </div>
+
+            <PromotionDialog
+                getPromotionOptions={getPromotionOptions}
+                onPromote={promotePiece}
+                isPromotionActive={isPromotionActive}
+            />
         </main>
     );
 };
