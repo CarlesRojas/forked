@@ -23,4 +23,10 @@ export class Rook extends Piece {
     public set hasMoved(_) {
         this._hasMoved = true;
     }
+
+    public override clone(): Piece {
+        const newRook = new Rook(this.color);
+        if (this._hasMoved) newRook.hasMoved = true;
+        return newRook;
+    }
 }

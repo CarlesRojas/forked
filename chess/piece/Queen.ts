@@ -18,4 +18,8 @@ export class Queen extends Piece {
         super(pieceColor);
         this._fen = pieceColor === Color.WHITE ? Fen.WHITE_QUEEN : Fen.BLACK_QUEEN;
     }
+
+    public override clone(): Piece {
+        return new Queen(this.color);
+    }
 }

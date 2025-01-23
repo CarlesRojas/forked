@@ -14,4 +14,8 @@ export class Bishop extends Piece {
         super(pieceColor);
         this._fen = pieceColor === Color.WHITE ? Fen.WHITE_BISHOP : Fen.BLACK_BISHOP;
     }
+
+    public override clone(): Piece {
+        return new Bishop(this.color);
+    }
 }

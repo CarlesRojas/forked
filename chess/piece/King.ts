@@ -27,4 +27,10 @@ export class King extends Piece {
     public set hasMoved(_) {
         this._hasMoved = true;
     }
+
+    public override clone(): Piece {
+        const newKing = new King(this.color);
+        if (this._hasMoved) newKing.hasMoved = true;
+        return newKing;
+    }
 }

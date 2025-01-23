@@ -1,3 +1,4 @@
+import { COLUMNS, ROWS } from "@/chess/const";
 import { Coords } from "@/chess/type";
 import { cn } from "@/lib/cn";
 
@@ -49,6 +50,8 @@ const Tile = ({
                     <div className="pointer-events-none size-1/4 rounded-full bg-black/15 select-none" />
                 )
             )}
+
+            <p className="absolute right-1 bottom-1 text-sm font-bold tracking-widest text-black/30">{`${COLUMNS[coords.y]}${ROWS[coords.x]}`}</p>
         </div>
     );
 };

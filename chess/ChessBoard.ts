@@ -1,3 +1,4 @@
+import { COLUMNS } from "@/chess/const";
 import { FenConverter } from "@/chess/FenConverter";
 import { Bishop } from "@/chess/piece/Bishop";
 import { King } from "@/chess/piece/King";
@@ -6,30 +7,20 @@ import { Pawn } from "@/chess/piece/Pawn";
 import { Piece } from "@/chess/piece/Piece";
 import { Queen } from "@/chess/piece/Queen";
 import { Rook } from "@/chess/piece/Rook";
-import {
-    CheckState,
-    Color,
-    Coords,
-    Fen,
-    GameHistory,
-    LastMove,
-    MoveList,
-    MoveType,
-    SafeSquares,
-    columns,
-} from "@/chess/type";
+import { CheckState, Color, Coords, Fen, GameHistory, LastMove, MoveList, MoveType, SafeSquares } from "@/chess/type";
 
 export class ChessBoard {
     private chessBoard: (Piece | null)[][];
-    private readonly chessBoardSize: number = 8;
+    public readonly chessBoardSize: number = 8;
     private _playerColor = Color.WHITE;
     private _safeSquares: SafeSquares;
     private _lastMove: LastMove | undefined;
     private _checkState: CheckState = { isInCheck: false };
-    private fiftyMoveRuleCounter: number = 0;
+    private _fiftyMoveRuleCounter: number = 0;
 
     private _isGameOver: boolean = false;
     private _gameOverMessage: string | undefined;
+    private _isMate: boolean = false;
 
     private fullNumberOfMoves: number = 1;
     private threeFoldRepetitionDictionary = new Map<string, number>();
@@ -92,8 +83,53 @@ export class ChessBoard {
         this._gameHistory = [{ board: this.chessBoardView, lastMove: this._lastMove, checkState: this._checkState }];
     }
 
+    public clone(): ChessBoard {
+        const newBoard = new ChessBoard();
+
+        newBoard.chessBoard = this.chessBoard.map((row) => row.map((piece) => (piece ? piece.clone() : null)));
+
+        newBoard._playerColor = this._playerColor;
+        newBoard._fiftyMoveRuleCounter = this._fiftyMoveRuleCounter;
+        newBoard._isGameOver = this._isGameOver;
+        newBoard._gameOverMessage = this._gameOverMessage;
+        newBoard._isMate = this._isMate;
+        newBoard.fullNumberOfMoves = this.fullNumberOfMoves;
+        newBoard.threeFoldRepetitionFlag = this.threeFoldRepetitionFlag;
+        newBoard._boardAsFEN = this._boardAsFEN;
+
+        newBoard._safeSquares = new Map(
+            Array.from(this._safeSquares.entries()).map(([key, coords]) => [key, [...coords]]),
+        );
+
+        newBoard._lastMove = this._lastMove
+            ? {
+                  ...this._lastMove,
+                  piece: this._lastMove.piece.clone(),
+                  moveType: new Set([...this._lastMove.moveType]),
+              }
+            : undefined;
+
+        newBoard._checkState = this._checkState.isInCheck
+            ? { ...this._checkState, coords: { ...this._checkState.coords } }
+            : { ...this._checkState };
+
+        newBoard.threeFoldRepetitionDictionary = new Map(
+            Array.from(this.threeFoldRepetitionDictionary.entries()).map(([key, value]) => [key, value]),
+        );
+
+        return newBoard;
+    }
+
+    public get board(): (Piece | null)[][] {
+        return this.chessBoard;
+    }
+
     public get playerColor(): Color {
         return this._playerColor;
+    }
+
+    public get fiftyMoveRuleCounter(): number {
+        return this._fiftyMoveRuleCounter;
     }
 
     public get chessBoardView(): (Fen | null)[][] {
@@ -112,6 +148,10 @@ export class ChessBoard {
 
     public get checkState(): CheckState {
         return this._checkState;
+    }
+
+    public get isMate(): boolean {
+        return this._isMate;
     }
 
     public get isGameOver(): boolean {
@@ -342,8 +382,8 @@ export class ChessBoard {
         const isPieceTaken: boolean = this.chessBoard[newX][newY] !== null;
         if (isPieceTaken) moveType.add(MoveType.CAPTURE);
 
-        if (piece instanceof Pawn || isPieceTaken) this.fiftyMoveRuleCounter = 0;
-        else this.fiftyMoveRuleCounter += 0.5;
+        if (piece instanceof Pawn || isPieceTaken) this._fiftyMoveRuleCounter = 0;
+        else this._fiftyMoveRuleCounter += 0.5;
 
         this.handlingSpecialMoves(piece, prevX, prevY, newX, newY, moveType);
 
@@ -373,7 +413,7 @@ export class ChessBoard {
             this.chessBoard,
             this._playerColor,
             this._lastMove,
-            this.fiftyMoveRuleCounter,
+            this._fiftyMoveRuleCounter,
             this.fullNumberOfMoves,
         );
         this.updateThreeFoldRepetitionDictionary(this._boardAsFEN);
@@ -436,6 +476,7 @@ export class ChessBoard {
             if (this._checkState.isInCheck) {
                 const prevPlayer: string = this._playerColor === Color.WHITE ? "Black" : "White";
                 this._gameOverMessage = prevPlayer + " won by checkmate";
+                this._isMate = true;
             } else this._gameOverMessage = "Stalemate";
 
             return true;
@@ -446,7 +487,7 @@ export class ChessBoard {
             return true;
         }
 
-        if (this.fiftyMoveRuleCounter === 50) {
+        if (this._fiftyMoveRuleCounter === 50) {
             this._gameOverMessage = "Draw due fifty move rule";
             return true;
         }
@@ -549,8 +590,8 @@ export class ChessBoard {
         if (moveType.has(MoveType.CASTLE)) move = currY - prevY === 2 ? "O-O" : "O-O-O";
         else {
             move = pieceName + this.startingPieceCoordsNotation();
-            if (moveType.has(MoveType.CAPTURE)) move += piece instanceof Pawn ? columns[prevY] + "x" : "x";
-            move += columns[currY] + String(currX + 1);
+            if (moveType.has(MoveType.CAPTURE)) move += piece instanceof Pawn ? COLUMNS[prevY] + "x" : "x";
+            move += COLUMNS[currY] + String(currX + 1);
 
             if (promotedPiece) move += "=" + promotedPiece.toUpperCase();
         }
@@ -589,13 +630,13 @@ export class ChessBoard {
         const piecesRank = new Set(samePiecesCoords.map((coords) => coords.x));
 
         // means that all of the pieces are on different files (a, b, c, ...)
-        if (piecesFile.size === samePiecesCoords.length) return columns[prevY];
+        if (piecesFile.size === samePiecesCoords.length) return COLUMNS[prevY];
 
         // means that all of the pieces are on different rank (1, 2, 3, ...)
         if (piecesRank.size === samePiecesCoords.length) return String(prevX + 1);
 
         // in case that there are pieces that shares both rank and a file with multiple or one piece
-        return columns[prevY] + String(prevX + 1);
+        return COLUMNS[prevY] + String(prevX + 1);
     }
 
     private updateGameHistory(): void {
@@ -604,5 +645,18 @@ export class ChessBoard {
             checkState: { ...this._checkState },
             lastMove: this._lastMove ? { ...this._lastMove } : undefined,
         });
+    }
+
+    public getPieceAt(coords: Coords): Piece | null {
+        return this.chessBoard[coords.x][coords.y];
+    }
+
+    public parseSafeSquareFrom(from: string): Coords {
+        const [x, y] = from.split(",");
+        return { x: Number(x), y: Number(y) };
+    }
+
+    public willMoveBePromotion(fen: Fen, to: Coords): boolean {
+        return (fen === Fen.WHITE_PAWN || fen === Fen.BLACK_PAWN) && (to.x === 0 || to.x === 7);
     }
 }

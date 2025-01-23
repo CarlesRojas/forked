@@ -81,8 +81,6 @@ type GameState = {
 
 export type GameHistory = GameState[];
 
-export const columns = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
-
 type SquareWithPiece = {
     piece: Fen;
     coords: Coords;
@@ -93,3 +91,9 @@ type SquareWithoutPiece = {
 };
 
 export type SelectedSquare = SquareWithPiece | SquareWithoutPiece;
+
+export interface Score {
+    from: Coords;
+    to: Coords;
+    score: number;
+}

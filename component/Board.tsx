@@ -1,6 +1,8 @@
 "use client";
 
 import { ChessBoard } from "@/chess/ChessBoard";
+import { COLUMNS, EngineDifficulty, ROWS } from "@/chess/const";
+import { Engine } from "@/chess/Engine";
 import { CheckState, Color, Coords, Fen, LastMove, SelectedSquare } from "@/chess/type";
 import Piece from "@/component/Piece";
 import PromotionDialog from "@/component/PromotionDialog";
@@ -102,16 +104,18 @@ const Board = () => {
         setLastMove(chessBoard.lastMove);
         setCheckState(chessBoard.checkState);
         unmarkMoves();
+
+        const aiResult = new Engine(chessBoard).getEngineMove(EngineDifficulty.GRANDMASTER);
+        console.log(
+            `Move from ${COLUMNS[aiResult.from.y]}${ROWS[aiResult.from.x]} to ${COLUMNS[aiResult.to.y]}${ROWS[aiResult.to.x]} (Score: ${aiResult.score})`,
+        );
     };
 
     const placePiece = (newCoords: Coords) => {
         if (!selectedSquare.piece) return;
         if (!isSquareMoveForSelectedPiece(newCoords)) return;
-
-        const isPawnSelected: boolean =
-            selectedSquare.piece === Fen.WHITE_PAWN || selectedSquare.piece === Fen.BLACK_PAWN;
-        const isPawnOnlastRank: boolean = isPawnSelected && (newCoords.x === 7 || newCoords.x === 0);
-        const shouldOpenPromotionDialog: boolean = !isPromotionActive && isPawnOnlastRank;
+        const shouldOpenPromotionDialog: boolean =
+            !isPromotionActive && chessBoard.willMoveBePromotion(selectedSquare.piece, newCoords);
 
         if (shouldOpenPromotionDialog) {
             setPieceSafeSquares([]);

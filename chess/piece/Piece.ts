@@ -17,4 +17,6 @@ export abstract class Piece {
     public get color(): Color {
         return this._color;
     }
+
+    public abstract clone(): Piece;
 }

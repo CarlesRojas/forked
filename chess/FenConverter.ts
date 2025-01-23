@@ -1,8 +1,9 @@
+import { COLUMNS } from "@/chess/const";
 import { King } from "@/chess/piece/King";
 import { Pawn } from "@/chess/piece/Pawn";
 import { Piece } from "@/chess/piece/Piece";
 import { Rook } from "@/chess/piece/Rook";
-import { Color, columns, LastMove } from "@/chess/type";
+import { Color, LastMove } from "@/chess/type";
 
 export class FenConverter {
     public static readonly initalPosition: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -76,7 +77,7 @@ export class FenConverter {
 
         if (piece instanceof Pawn && Math.abs(newX - prevX) === 2) {
             const row: number = color === Color.WHITE ? 6 : 3;
-            return columns[prevY] + String(row);
+            return COLUMNS[prevY] + String(row);
         }
         return "-";
     }

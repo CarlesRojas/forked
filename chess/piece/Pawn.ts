@@ -13,11 +13,11 @@ export class Pawn extends Piece {
 
     constructor(private pieceColor: Color) {
         super(pieceColor);
-        if (pieceColor === Color.BLACK) this.setBLACK_PAWNDirections();
+        if (pieceColor === Color.BLACK) this.setBlackPawnDirections();
         this._fen = pieceColor === Color.WHITE ? Fen.WHITE_PAWN : Fen.BLACK_PAWN;
     }
 
-    private setBLACK_PAWNDirections(): void {
+    private setBlackPawnDirections(): void {
         this._directions = this._directions.map(({ x, y }) => ({ x: -1 * x, y }));
     }
 
@@ -32,6 +32,12 @@ export class Pawn extends Piece {
             { x: 1, y: 1 },
             { x: 1, y: -1 },
         ];
-        if (this.pieceColor === Color.BLACK) this.setBLACK_PAWNDirections();
+        if (this.pieceColor === Color.BLACK) this.setBlackPawnDirections();
+    }
+
+    public override clone(): Piece {
+        const newPawn = new Pawn(this.color);
+        if (this._hasMoved) newPawn.hasMoved = true;
+        return newPawn;
     }
 }
