@@ -96,4 +96,5 @@ export interface Score {
     from: Coords;
     to: Coords;
     score: number;
+    depth: number;
 }

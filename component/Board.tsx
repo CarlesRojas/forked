@@ -1,15 +1,16 @@
 "use client";
 
 import { ChessBoard } from "@/chess/ChessBoard";
-import { COLUMNS, EngineDifficulty, ROWS } from "@/chess/const";
+import { EngineDifficulty } from "@/chess/const";
 import { Engine } from "@/chess/Engine";
 import { CheckState, Color, Coords, Fen, LastMove, SelectedSquare } from "@/chess/type";
 import Piece from "@/component/Piece";
 import PromotionDialog from "@/component/PromotionDialog";
 import Tile from "@/component/Tile";
+import { cn } from "@/lib/cn";
 import { chessBoardAtom } from "@/state/game";
 import { useAtomValue } from "jotai";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const Board = () => {
     const chessBoard = useAtomValue(chessBoardAtom);
@@ -22,6 +23,8 @@ const Board = () => {
 
     const [isPromotionActive, setIsPromotionActive] = useState<boolean>(false);
     const [promotionCoords, setPromotionCoords] = useState<Coords | null>(null);
+
+    const [isEngineTurn, setIsEngineTurn] = useState<boolean>(false);
 
     const getPromotionOptions = () => {
         return chessBoard.playerColor === Color.WHITE
@@ -65,7 +68,7 @@ const Board = () => {
         return promotionCoords.x === coords.x && promotionCoords.y === coords.y;
     };
 
-    const unmarkMoves = () => {
+    const unmarkMoves = useCallback(() => {
         setSelectedSquare({ piece: null });
         setPieceSafeSquares([]);
 
@@ -73,7 +76,7 @@ const Board = () => {
             setIsPromotionActive(false);
             setPromotionCoords(null);
         }
-    };
+    }, [isPromotionActive]);
 
     const isWrongPieceSelected = (piece: Fen): boolean => {
         const isWhitePieceSelected: boolean = piece === piece.toUpperCase();
@@ -98,18 +101,18 @@ const Board = () => {
         setPieceSafeSquares(chessBoard.safeSquares.get(coords.x + "," + coords.y) || []);
     };
 
-    const updateBoard = (prevCoords: Coords, newCoords: Coords, promotedPiece: Fen | null) => {
-        chessBoard.move(prevCoords.x, prevCoords.y, newCoords.x, newCoords.y, promotedPiece);
-        setChessBoardView(chessBoard.chessBoardView);
-        setLastMove(chessBoard.lastMove);
-        setCheckState(chessBoard.checkState);
-        unmarkMoves();
+    const updateBoard = useCallback(
+        (prevCoords: Coords, newCoords: Coords, promotedPiece: Fen | null) => {
+            chessBoard.move(prevCoords.x, prevCoords.y, newCoords.x, newCoords.y, promotedPiece);
+            setChessBoardView(chessBoard.chessBoardView);
+            setLastMove(chessBoard.lastMove);
+            setCheckState(chessBoard.checkState);
+            unmarkMoves();
 
-        const aiResult = new Engine(chessBoard).getEngineMove(EngineDifficulty.GRANDMASTER);
-        console.log(
-            `Move from ${COLUMNS[aiResult.from.y]}${ROWS[aiResult.from.x]} to ${COLUMNS[aiResult.to.y]}${ROWS[aiResult.to.x]} (Score: ${aiResult.score})`,
-        );
-    };
+            setIsEngineTurn(chessBoard.playerColor === Color.BLACK);
+        },
+        [chessBoard, unmarkMoves],
+    );
 
     const placePiece = (newCoords: Coords) => {
         if (!selectedSquare.piece) return;
@@ -135,9 +138,20 @@ const Board = () => {
         updateBoard(prevCoords, promotionCoords, piece);
     };
 
+    useEffect(() => {
+        if (!isEngineTurn) return;
+
+        const id = setTimeout(() => {
+            const aiResult = new Engine(chessBoard).getEngineMove(EngineDifficulty.EXPERT);
+            updateBoard(aiResult.from, aiResult.to, null);
+        }, 1);
+
+        return () => clearTimeout(id);
+    }, [chessBoard, isEngineTurn, updateBoard]);
+
     return (
         <main className="relative aspect-square h-full">
-            <div className="grid h-full w-fit grid-cols-8 grid-rows-8">
+            <div className={cn("grid h-full w-fit grid-cols-8 grid-rows-8", isEngineTurn && "pointer-events-none")}>
                 {Array.from({ length: 8 }).map((_, x) =>
                     Array.from({ length: 8 }).map((_, y) => (
                         <Tile
