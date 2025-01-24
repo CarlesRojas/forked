@@ -4,37 +4,13 @@ export const COLUMNS = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
 export const ROWS = ["1", "2", "3", "4", "5", "6", "7", "8"] as const;
 
 export enum EngineDifficulty {
-    EASY = 0,
-    MEDIUM = 1,
-    HARD = 2,
-    EXPERT = 3,
-    MASTER = 4,
-    GRANDMASTER = 5,
+    EASY = 1,
+    MEDIUM = 2,
+    HARD = 3,
+    EXPERT = 4,
+    MASTER = 5,
+    GRANDMASTER = 6,
 }
-
-export enum DepthType {
-    BASE = "BASE",
-    EXTENDED = "EXTENDED",
-}
-
-export const EngineDepthByDifficulty: Record<DepthType, Record<EngineDifficulty, number>> = {
-    [DepthType.BASE]: {
-        [EngineDifficulty.EASY]: 1,
-        [EngineDifficulty.MEDIUM]: 2,
-        [EngineDifficulty.HARD]: 2,
-        [EngineDifficulty.EXPERT]: 3,
-        [EngineDifficulty.MASTER]: 3,
-        [EngineDifficulty.GRANDMASTER]: 4,
-    },
-    [DepthType.EXTENDED]: {
-        [EngineDifficulty.EASY]: 2,
-        [EngineDifficulty.MEDIUM]: 2,
-        [EngineDifficulty.HARD]: 4,
-        [EngineDifficulty.EXPERT]: 4,
-        [EngineDifficulty.MASTER]: 5,
-        [EngineDifficulty.GRANDMASTER]: 5,
-    },
-};
 
 export const PieceValue: Record<Fen, number> = {
     [Fen.WHITE_PAWN]: 100,

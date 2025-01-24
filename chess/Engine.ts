@@ -1,14 +1,5 @@
 import { ChessBoard } from "@/chess/ChessBoard";
-import {
-    COLUMNS,
-    DepthType,
-    EngineDepthByDifficulty,
-    EngineDifficulty,
-    MinMaxScore,
-    PieceValue,
-    ROWS,
-    ScoreByPosition,
-} from "@/chess/const";
+import { COLUMNS, EngineDifficulty, MinMaxScore, PieceValue, ROWS, ScoreByPosition } from "@/chess/const";
 import { Piece } from "@/chess/piece/Piece";
 import { Color, Fen, Score } from "@/chess/type";
 
@@ -20,47 +11,67 @@ export class Engine {
     }
 
     public getEngineMove(engineDifficulty: EngineDifficulty) {
+        const startTime = Date.now();
+
         const moveScores = this.minimax(
             this.chessBoard,
-            EngineDepthByDifficulty[DepthType.BASE][engineDifficulty],
+            engineDifficulty,
+            MinMaxScore.MIN * 2,
+            MinMaxScore.MAX * 2,
             this.chessBoard.playerColor === Color.WHITE,
         );
 
-        this.printMoveScore(moveScores);
+        const timeSpent = Date.now() - startTime;
+
+        this.printMoveScore(moveScores, timeSpent);
         return moveScores;
     }
 
-    private minimax(chessBoard: ChessBoard, depth: number, maximizingPlayer: boolean): Score {
+    private minimax(
+        chessBoard: ChessBoard,
+        depth: number,
+        alpha: number,
+        beta: number,
+        maximizingPlayer: boolean,
+    ): Score {
         if (depth === 0 || chessBoard.isGameOver)
             return { score: this.calculateScore(chessBoard, Color.WHITE), from: { x: 0, y: 0 }, to: { x: 0, y: 0 } };
 
-        let bestScore: Score | null = null;
-        const promotionPiece = chessBoard.playerColor === Color.WHITE ? Fen.WHITE_QUEEN : Fen.BLACK_QUEEN;
+        let bestScore: Score = {
+            score: maximizingPlayer ? MinMaxScore.MIN : MinMaxScore.MAX,
+            from: { x: 0, y: 0 },
+            to: { x: 0, y: 0 },
+            promotionPiece: null,
+        };
+
+        const currentColorQueen = chessBoard.playerColor === Color.WHITE ? Fen.WHITE_QUEEN : Fen.BLACK_QUEEN;
+        let shouldBreak = false;
 
         for (const [fromRaw, toMoves] of chessBoard.safeSquares) {
-            toMoves.forEach((to) => {
+            for (const to of toMoves) {
                 const from = chessBoard.parseSafeSquareFrom(fromRaw);
                 const testBoard = chessBoard.clone();
                 const piece = testBoard.getPieceAt(from);
-                if (!piece) return;
+                if (!piece) continue;
+                const promotionPiece = testBoard.willMoveBePromotion(piece.fen, to) ? currentColorQueen : null;
+                testBoard.move(from.x, from.y, to.x, to.y, promotionPiece);
 
-                const moveIsPromotion = testBoard.willMoveBePromotion(piece.fen, to);
-                testBoard.move(from.x, from.y, to.x, to.y, moveIsPromotion ? promotionPiece : null);
+                const result = this.minimax(testBoard, depth - 1, alpha, beta, !maximizingPlayer);
 
-                const result = this.minimax(testBoard, depth - 1, !maximizingPlayer);
-                if (
-                    !bestScore ||
-                    (maximizingPlayer && result.score > bestScore.score) ||
-                    (!maximizingPlayer && result.score < bestScore.score)
-                ) {
-                    bestScore = {
-                        score: result.score,
-                        from,
-                        to,
-                        promotionPiece: moveIsPromotion ? promotionPiece : undefined,
-                    };
+                if (maximizingPlayer) {
+                    if (result.score > bestScore.score) bestScore = { score: result.score, from, to, promotionPiece };
+                    alpha = Math.max(alpha, result.score);
+                    if (beta <= alpha) shouldBreak = true;
+                } else {
+                    if (result.score < bestScore.score) bestScore = { score: result.score, from, to, promotionPiece };
+                    beta = Math.min(beta, result.score);
+                    if (beta <= alpha) shouldBreak = true;
                 }
-            });
+
+                if (shouldBreak) break;
+            }
+
+            if (shouldBreak) break;
         }
 
         return bestScore!;
@@ -114,9 +125,13 @@ export class Engine {
         return score;
     }
 
-    private printMoveScore(score: Score) {
+    private printMoveScore(score: Score, timeSpent: number) {
+        const scoreColor = score.score >= 0 ? "\x1b[32m" : "\x1b[31m";
+        const moveColor = "\x1b[36m";
+        const reset = "\x1b[0m";
+
         console.log(
-            `Move from ${COLUMNS[score.from.y]}${ROWS[score.from.x]} to ${COLUMNS[score.to.y]}${ROWS[score.to.x]} (Score: ${score.score})`,
+            `${scoreColor}${score.score}${reset} (${moveColor}${COLUMNS[score.from.y]}${ROWS[score.from.x]}${reset} to ${moveColor}${COLUMNS[score.to.y]}${ROWS[score.to.x]}${reset}) in ${timeSpent}ms`,
         );
     }
 }
