@@ -25,12 +25,6 @@ export class Engine {
         return moveScores[0];
     }
 
-    private printMoveScore(score: Score) {
-        console.log(
-            `Move from ${COLUMNS[score.from.y]}${ROWS[score.from.x]} to ${COLUMNS[score.to.y]}${ROWS[score.to.x]} (Score: ${score.score}, Depth: ${score.depth})`,
-        );
-    }
-
     private calculateAiMoves(engineDifficulty: EngineDifficulty) {
         const difficulty: EngineDifficulty = Math.min(
             EngineDifficulty.GRANDMASTER,
@@ -190,5 +184,11 @@ export class Engine {
         }
 
         return scoreIndex;
+    }
+
+    private printMoveScore(score: Score) {
+        console.log(
+            `Move from ${COLUMNS[score.from.y]}${ROWS[score.from.x]} to ${COLUMNS[score.to.y]}${ROWS[score.to.x]} (Score: ${score.score}, Depth: ${score.depth})`,
+        );
     }
 }
