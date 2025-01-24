@@ -34,11 +34,13 @@ export class Engine {
     private calculateAiMoves(engineDifficulty: EngineDifficulty) {
         const difficulty: EngineDifficulty = Math.min(
             EngineDifficulty.GRANDMASTER,
-            this.getTotalMaterialValue(this.chessBoard) < 50 ? engineDifficulty + 1 : engineDifficulty,
+            this.calculateMaterialScore(this.chessBoard, this.chessBoard.playerColor, true) < 50
+                ? engineDifficulty + 1
+                : engineDifficulty,
         );
 
         const scoreTable: Score[] = [];
-        const initialScore = this.calculateScore(this.chessBoard, this.chessBoard.playerColor);
+        const initialScore = this.calculateMaterialScore(this.chessBoard, this.chessBoard.playerColor);
 
         for (const [fromRaw, toMoves] of this.chessBoard.safeSquares) {
             toMoves.forEach((to) => {
@@ -57,7 +59,7 @@ export class Engine {
                     this.chessBoard.playerColor,
                     difficulty,
                     moveIsCapture,
-                    moveIsCapture ? this.calculateScore(testBoard, this.chessBoard.playerColor) : initialScore,
+                    moveIsCapture ? this.calculateMaterialScore(testBoard, this.chessBoard.playerColor) : initialScore,
                 );
 
                 const positionalScore = this.calculatePositionalScore(testBoard, this.chessBoard.playerColor);
@@ -94,7 +96,7 @@ export class Engine {
         if (chessBoard.isGameOver)
             return {
                 score:
-                    this.calculateScore(chessBoard, playingPlayerColor) +
+                    this.calculateMaterialScore(chessBoard, playingPlayerColor) +
                     (chessBoard.playerColor === playingPlayerColor ? depth : -depth),
                 max: true,
                 depth,
@@ -107,7 +109,7 @@ export class Engine {
 
         if (!shouldContinue) {
             if (initialScore !== null) return { score: initialScore, max: false, depth };
-            const score = this.calculateScore(chessBoard, playingPlayerColor);
+            const score = this.calculateMaterialScore(chessBoard, playingPlayerColor);
             return { score, max: false, depth };
         }
 
@@ -136,7 +138,7 @@ export class Engine {
                     playingPlayerColor,
                     difficulty,
                     moveIsCapture,
-                    moveIsCapture ? this.calculateScore(testBoard, testBoard.playerColor) : initialScore,
+                    moveIsCapture ? this.calculateMaterialScore(testBoard, testBoard.playerColor) : initialScore,
                     depth + 1,
                 );
 
@@ -170,22 +172,7 @@ export class Engine {
         return score;
     }
 
-    private getTotalMaterialValue(chessBoard: ChessBoard): number {
-        let totalValue = 0;
-
-        for (let x = 0; x < chessBoard.chessBoardSize; x++) {
-            for (let y = 0; y < chessBoard.chessBoardSize; y++) {
-                const piece: Piece | null = chessBoard.board[x][y];
-                if (!piece) continue;
-
-                totalValue += PieceValue[piece.fen];
-            }
-        }
-
-        return totalValue;
-    }
-
-    private calculateScore(chessBoard: ChessBoard, playerColor: Color): number {
+    private calculateMaterialScore(chessBoard: ChessBoard, playerColor: Color, combined = false): number {
         let scoreIndex = 0;
 
         if (chessBoard.isMate) return chessBoard.playerColor === playerColor ? MinMaxScore.MIN : MinMaxScore.MAX;
@@ -196,7 +183,8 @@ export class Engine {
                 const piece = chessBoard.getPieceAt({ x, y });
                 if (!piece) continue;
 
-                if (piece.color === playerColor) scoreIndex += PieceValue[piece.fen];
+                if (combined) scoreIndex += PieceValue[piece.fen];
+                else if (piece.color === playerColor) scoreIndex += PieceValue[piece.fen];
                 else scoreIndex -= PieceValue[piece.fen];
             }
         }
