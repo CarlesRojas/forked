@@ -129,11 +129,10 @@ export const KingLateScoreMod: number[][] = [
 ];
 
 export const MinMaxScore = {
-    MIN: -1000,
-    MAX: 1000,
+    MIN: -100000,
+    MAX: 100000,
 };
 
-// TODO check correct direction
 export const ScoreByPosition: Record<Fen, number[][]> = {
     [Fen.WHITE_PAWN]: PawnScoreMod.toReversed(),
     [Fen.BLACK_PAWN]: PawnScoreMod,

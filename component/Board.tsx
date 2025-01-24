@@ -142,9 +142,9 @@ const Board = () => {
         if (!isEngineTurn) return;
 
         const id = setTimeout(() => {
-            const aiResult = new Engine(chessBoard).getEngineMove(EngineDifficulty.EXPERT);
+            const aiResult = new Engine(chessBoard).getEngineMove(EngineDifficulty.MASTER);
             updateBoard(aiResult.from, aiResult.to, null);
-        }, 1);
+        }, 10);
 
         return () => clearTimeout(id);
     }, [chessBoard, isEngineTurn, updateBoard]);
