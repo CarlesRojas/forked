@@ -12,3 +12,5 @@ export enum EngineDifficulty {
     MASTER = 5,
     GRANDMASTER = 6,
 }
+
+export const EVAL_BAR_LIMIT = 10;

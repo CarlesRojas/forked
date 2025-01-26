@@ -1,48 +1,24 @@
-// export class StockfishEngine {
-//     private stockfish: Worker;
-
 import { COLUMNS, ROWS } from "@/chess/const";
-import { Coords, Fen } from "@/chess/type";
-
-//     constructor() {
-//         this.stockfish = new Worker("./engine/stockfish.js");
-//         this.stockfish.addEventListener("message", this.onMessage);
-//     }
-
-//     public destroy() {
-//         this.stockfish.removeEventListener("message", this.onMessage);
-//         this.stockfish.terminate();
-//     }
-
-//     private onMessage = (e: MessageEvent) => {
-//         const bestMove = e.data?.match(/bestmove\s+(\S+)/)?.[1];
-
-//         console.log(bestMove);
-//     };
-
-//     evaluatePosition(fen: string, depth: number) {
-//         this.stockfish.postMessage(`position fen ${fen}`);
-//         this.stockfish.postMessage(`go depth ${depth}`);
-//     }
-// }
+import { Color, Coords, Fen } from "@/chess/type";
 
 const stockfish = new Worker("./engine/stockfish.wasm.js");
 
 export type EngineMove = { from: Coords; to: Coords; promotion?: Fen };
+export type EngineMateIn = { moves: number; color: Color };
 
 type EngineMessage = {
     /** stockfish engine message in UCI format*/
     uciMessage: string;
-    /** found best move for current position in format `e2e4`*/
+    /** found best move for current position */
     bestMove?: EngineMove;
-    /** found best move for opponent in format `e7e5` */
-    ponder?: string;
-    /**  material balance's difference in centipawns(IMPORTANT! stockfish gives the cp score in terms of whose turn it is)*/
-    positionEvaluation?: string;
+    /** found best move for opponent */
+    ponder?: EngineMove;
+    /** evaluation for the current turn player */
+    positionEvaluation?: number;
     /** count of moves until mate */
-    possibleMate?: string;
+    mateIn?: EngineMateIn;
     /** the best line found */
-    pv?: string;
+    bestLine?: EngineMove[];
     /** number of halfmoves the engine looks ahead */
     depth?: number;
 };
@@ -63,7 +39,7 @@ export default class StockfishEngine {
         this.init();
     }
 
-    private uciMoveToCoords(uciMove?: string): EngineMove | undefined {
+    private parseMove(uciMove?: string): EngineMove | undefined {
         if (!uciMove) return undefined;
 
         const from = uciMove.slice(0, 2);
@@ -83,16 +59,38 @@ export default class StockfishEngine {
         };
     }
 
+    private parseMateIn(mateIn?: string): EngineMateIn | undefined {
+        if (!mateIn) return undefined;
+
+        if (mateIn.includes("-")) return { moves: Math.abs(Number(mateIn)), color: Color.BLACK };
+        else return { moves: Math.abs(Number(mateIn)), color: Color.WHITE };
+    }
+
+    private parseEvaluation(evaluation?: string): number | undefined {
+        if (!evaluation) return undefined;
+
+        return Number(evaluation) / 100;
+    }
+
+    private parseBestLine(bestLine?: string): EngineMove[] | undefined {
+        if (!bestLine) return undefined;
+
+        return bestLine
+            .split(" ")
+            .map(this.parseMove)
+            .filter((elem) => elem !== undefined);
+    }
+
     private transformSFMessageData(e: MessageEvent): EngineMessage {
         const uciMessage = e?.data ?? e;
 
         return {
             uciMessage,
-            bestMove: this.uciMoveToCoords(uciMessage.match(/bestmove\s+(\S+)/)?.[1]),
-            ponder: uciMessage.match(/ponder\s+(\S+)/)?.[1],
-            positionEvaluation: uciMessage.match(/cp\s+(\S+)/)?.[1],
-            possibleMate: uciMessage.match(/mate\s+(\S+)/)?.[1],
-            pv: uciMessage.match(/ pv\s+(.*)/)?.[1],
+            bestMove: this.parseMove(uciMessage.match(/bestmove\s+(\S+)/)?.[1]),
+            ponder: this.parseMove(uciMessage.match(/ponder\s+(\S+)/)?.[1]),
+            positionEvaluation: this.parseEvaluation(uciMessage.match(/cp\s+(\S+)/)?.[1]),
+            mateIn: this.parseMateIn(uciMessage.match(/mate\s+(\S+)/)?.[1]),
+            bestLine: this.parseBestLine(uciMessage.match(/ pv\s+(.*)/)?.[1]),
             depth: Number(uciMessage.match(/ depth\s+(\S+)/)?.[1]) ?? 0,
         };
     }

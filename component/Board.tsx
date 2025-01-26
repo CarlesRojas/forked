@@ -24,7 +24,7 @@ const Board = () => {
     const [isPromotionActive, setIsPromotionActive] = useState<boolean>(false);
     const [promotionCoords, setPromotionCoords] = useState<Coords | null>(null);
 
-    const { evaluate, bestMove, evaluation } = useStockfish();
+    const { evaluate, bestMove, mateIn, evaluation } = useStockfish();
 
     const [isEngineTurn, setIsEngineTurn] = useState<boolean>(false);
 
@@ -150,10 +150,15 @@ const Board = () => {
 
     return (
         <main className="relative flex h-full w-full gap-6">
-            <EvaluationBar evaluation={evaluation} />
+            <EvaluationBar evaluation={evaluation} mateIn={mateIn} />
 
             <div className="relative aspect-square h-full">
-                <div className={cn("grid h-full w-fit grid-cols-8 grid-rows-8", isEngineTurn && "pointer-events-none")}>
+                <div
+                    className={cn(
+                        "grid h-full w-fit grid-cols-8 grid-rows-8",
+                        // , isEngineTurn && "pointer-events-none"
+                    )}
+                >
                     {Array.from({ length: 8 }).map((_, x) =>
                         Array.from({ length: 8 }).map((_, y) => (
                             <Tile

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 
 import { MAX_ENGINE_THINK_TIME } from "@/chess/const";
-import StockfishEngine from "@/chess/stockfish/StockfishEngine";
-import { Color, Coords, Fen } from "@/chess/type";
+import StockfishEngine, { EngineMateIn, EngineMove } from "@/chess/stockfish/StockfishEngine";
+import { Color } from "@/chess/type";
 import { useMemo, useState } from "react";
 
 interface Props {
@@ -17,9 +17,9 @@ export const useStockfish = () => {
 
     const [evaluation, setEvaluation] = useState(0);
     const [depth, setDepth] = useState(10);
-    const [bestLine, setBestline] = useState("");
-    const [possibleMate, setPossibleMate] = useState("");
-    const [bestMove, setBestMove] = useState<{ from: Coords; to: Coords; promotion?: Fen }>();
+    const [bestLine, setBestline] = useState<EngineMove[]>([]);
+    const [mateIn, setMateIn] = useState<EngineMateIn>();
+    const [bestMove, setBestMove] = useState<EngineMove>();
 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -37,19 +37,18 @@ export const useStockfish = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
         setDepth(10);
-        setBestline("");
-        setPossibleMate("");
+        setBestline([]);
         setBestMove(undefined);
 
         engine.evaluatePosition(fen, 18);
 
-        engine.onMessage(({ positionEvaluation, possibleMate, pv, depth, bestMove }) => {
+        engine.onMessage(({ positionEvaluation, mateIn, bestLine, depth, bestMove }) => {
             if (depth && depth < 10) return;
 
-            if (positionEvaluation) setEvaluation(((turn === Color.WHITE ? 1 : -1) * Number(positionEvaluation)) / 100);
-            if (possibleMate) setPossibleMate(possibleMate);
+            if (positionEvaluation) setEvaluation((turn === Color.WHITE ? 1 : -1) * positionEvaluation);
+            if (mateIn) setMateIn(mateIn);
             if (depth) setDepth(depth);
-            if (pv) setBestline(pv);
+            if (bestLine) setBestline(bestLine);
             if (bestMove) setBestMove(bestMove);
         });
 
@@ -58,5 +57,5 @@ export const useStockfish = () => {
         }, MAX_ENGINE_THINK_TIME);
     };
 
-    return { evaluate, evaluation, depth, bestLine, possibleMate, bestMove };
+    return { evaluate, evaluation, depth, bestLine, mateIn, bestMove };
 };
