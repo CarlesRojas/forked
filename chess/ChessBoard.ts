@@ -7,7 +7,19 @@ import { Pawn } from "@/chess/piece/Pawn";
 import { Piece } from "@/chess/piece/Piece";
 import { Queen } from "@/chess/piece/Queen";
 import { Rook } from "@/chess/piece/Rook";
-import { CheckState, Color, Coords, Fen, GameHistory, LastMove, MoveList, MoveType, SafeSquares } from "@/chess/type";
+import {
+    CheckState,
+    Color,
+    Coords,
+    Fen,
+    GameHistory,
+    GameOver,
+    GameOverReason,
+    LastMove,
+    MoveList,
+    MoveType,
+    SafeSquares,
+} from "@/chess/type";
 
 export class ChessBoard {
     private chessBoard: (Piece | null)[][];
@@ -19,8 +31,7 @@ export class ChessBoard {
     private _fiftyMoveRuleCounter: number = 0;
 
     private _isGameOver: boolean = false;
-    private _gameOverMessage: string | undefined;
-    private _isMate: boolean = false;
+    private _gameOver: GameOver | undefined;
 
     private fullNumberOfMoves: number = 1;
     private threeFoldRepetitionDictionary = new Map<string, number>();
@@ -91,8 +102,7 @@ export class ChessBoard {
         newBoard._playerColor = this._playerColor;
         newBoard._fiftyMoveRuleCounter = this._fiftyMoveRuleCounter;
         newBoard._isGameOver = this._isGameOver;
-        newBoard._gameOverMessage = this._gameOverMessage;
-        newBoard._isMate = this._isMate;
+        newBoard._gameOver = this._gameOver;
         newBoard.fullNumberOfMoves = this.fullNumberOfMoves;
         newBoard.threeFoldRepetitionFlag = this.threeFoldRepetitionFlag;
         newBoard._boardAsFEN = this._boardAsFEN;
@@ -150,16 +160,12 @@ export class ChessBoard {
         return this._checkState;
     }
 
-    public get isMate(): boolean {
-        return this._isMate;
-    }
-
     public get isGameOver(): boolean {
         return this._isGameOver;
     }
 
-    public get gameOverMessage(): string | undefined {
-        return this._gameOverMessage;
+    public get gameOver(): GameOver | undefined {
+        return this._gameOver;
     }
 
     public get boardAsFEN(): string {
@@ -468,27 +474,26 @@ export class ChessBoard {
 
     private isGameFinished(): boolean {
         if (this.insufficientMaterial()) {
-            this._gameOverMessage = "Draw due insufficient material";
+            this._gameOver = { isGameOver: true, reason: GameOverReason.INSUFFICIENT_MATERIAL };
             return true;
         }
 
         if (!this._safeSquares.size) {
             if (this._checkState.isInCheck) {
-                const prevPlayer: string = this._playerColor === Color.WHITE ? "Black" : "White";
-                this._gameOverMessage = prevPlayer + " won by checkmate";
-                this._isMate = true;
-            } else this._gameOverMessage = "Stalemate";
+                const prevPlayer = this._playerColor === Color.WHITE ? Color.BLACK : Color.WHITE;
+                this._gameOver = { isGameOver: true, winner: prevPlayer, reason: GameOverReason.MATE };
+            } else this._gameOver = { isGameOver: true, reason: GameOverReason.STALEMATE };
 
             return true;
         }
 
         if (this.threeFoldRepetitionFlag) {
-            this._gameOverMessage = "Draw due three fold repetition rule";
+            this._gameOver = { isGameOver: true, reason: GameOverReason.THREE_FOLD_REPETITION };
             return true;
         }
 
         if (this._fiftyMoveRuleCounter === 50) {
-            this._gameOverMessage = "Draw due fifty move rule";
+            this._gameOver = { isGameOver: true, reason: GameOverReason.FIFTY_MOVE_RULE };
             return true;
         }
 

@@ -98,3 +98,17 @@ export interface Score {
     score: number;
     promotionPiece?: Fen | null;
 }
+
+export enum GameOverReason {
+    INSUFFICIENT_MATERIAL = "INSUFFICIENT_MATERIAL",
+    MATE = "MATE",
+    STALEMATE = "STALEMATE",
+    THREE_FOLD_REPETITION = "THREE_FOLD_REPETITION",
+    FIFTY_MOVE_RULE = "FIFTY_MOVE_RULE",
+}
+
+export interface GameOver {
+    isGameOver: true;
+    winner?: Color;
+    reason: GameOverReason;
+}

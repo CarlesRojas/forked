@@ -89,7 +89,7 @@ const Board = () => {
     };
 
     const selectPiece = (coords: Coords) => {
-        if (chessBoard.gameOverMessage !== undefined) return;
+        if (chessBoard.isGameOver) return;
         const piece: Fen | null = chessBoard.chessBoardView[coords.x][coords.y];
         if (!piece || isWrongPieceSelected(piece)) return;
 
@@ -150,13 +150,13 @@ const Board = () => {
 
     return (
         <main className="relative flex h-full w-full gap-6">
-            <EvaluationBar evaluation={evaluation} mateIn={mateIn} />
+            <EvaluationBar evaluation={evaluation} mateIn={mateIn} gameOver={chessBoard.gameOver} />
 
             <div className="relative aspect-square h-full">
                 <div
                     className={cn(
                         "grid h-full w-fit grid-cols-8 grid-rows-8",
-                        // , isEngineTurn && "pointer-events-none"
+                        //  isEngineTurn && "pointer-events-none"
                     )}
                 >
                     {Array.from({ length: 8 }).map((_, x) =>
