@@ -1,9 +1,9 @@
 "use client";
 
 import { ChessBoard } from "@/chess/ChessBoard";
-import { EngineDifficulty } from "@/chess/const";
-import { Engine } from "@/chess/Engine";
+import { useStockfish } from "@/chess/stockfish/useStockfish";
 import { CheckState, Color, Coords, Fen, LastMove, SelectedSquare } from "@/chess/type";
+import EvaluationBar from "@/component/EvaluationBar";
 import Piece from "@/component/Piece";
 import PromotionDialog from "@/component/PromotionDialog";
 import Tile from "@/component/Tile";
@@ -23,6 +23,8 @@ const Board = () => {
 
     const [isPromotionActive, setIsPromotionActive] = useState<boolean>(false);
     const [promotionCoords, setPromotionCoords] = useState<Coords | null>(null);
+
+    const { evaluate, bestMove, evaluation } = useStockfish();
 
     const [isEngineTurn, setIsEngineTurn] = useState<boolean>(false);
 
@@ -102,16 +104,17 @@ const Board = () => {
     };
 
     const updateBoard = useCallback(
-        (prevCoords: Coords, newCoords: Coords, promotedPiece: Fen | null) => {
-            chessBoard.move(prevCoords.x, prevCoords.y, newCoords.x, newCoords.y, promotedPiece);
+        (prevCoords: Coords, newCoords: Coords, promotedPiece?: Fen | null) => {
+            chessBoard.move(prevCoords.x, prevCoords.y, newCoords.x, newCoords.y, promotedPiece ?? null);
             setChessBoardView(chessBoard.chessBoardView);
             setLastMove(chessBoard.lastMove);
             setCheckState(chessBoard.checkState);
             unmarkMoves();
 
             setIsEngineTurn(chessBoard.playerColor === Color.BLACK);
+            evaluate({ fen: chessBoard.boardAsFEN, isGameOver: chessBoard.isGameOver, turn: chessBoard.playerColor });
         },
-        [chessBoard, unmarkMoves],
+        [chessBoard, evaluate, unmarkMoves],
     );
 
     const placePiece = (newCoords: Coords) => {
@@ -139,51 +142,51 @@ const Board = () => {
     };
 
     useEffect(() => {
-        if (!isEngineTurn) return;
-
-        const id = setTimeout(() => {
-            const aiResult = new Engine(chessBoard).getEngineMove(EngineDifficulty.EXPERT);
-            updateBoard(aiResult.from, aiResult.to, null);
-        }, 50);
-
-        return () => clearTimeout(id);
-    }, [chessBoard, isEngineTurn, updateBoard]);
+        if (bestMove && isEngineTurn) {
+            const { from, to, promotion } = bestMove;
+            updateBoard(from, to, promotion);
+        }
+    }, [bestMove, isEngineTurn, updateBoard]);
 
     return (
-        <main className="relative aspect-square h-full">
-            <div className={cn("grid h-full w-fit grid-cols-8 grid-rows-8", isEngineTurn && "pointer-events-none")}>
-                {Array.from({ length: 8 }).map((_, x) =>
-                    Array.from({ length: 8 }).map((_, y) => (
-                        <Tile
-                            key={`${x}-${y}`}
-                            coords={{ x, y }}
-                            isSquareDark={isSquareDark}
-                            isSquareSelected={isSquareSelected}
-                            isSquareMoveForSelectedPiece={isSquareMoveForSelectedPiece}
-                            isSquareCaptureForSelectedPiece={isSquareCaptureForSelectedPiece}
-                            isSquareLastMove={isSquareLastMove}
-                            isSquareChecked={isSquareChecked}
-                            isSquarePromotionSquare={isSquarePromotionSquare}
-                            onTileClicked={(coords) => {
-                                selectPiece(coords);
-                                placePiece(coords);
-                            }}
-                        />
-                    )),
-                )}
-            </div>
+        <main className="relative flex h-full w-full gap-6">
+            <EvaluationBar evaluation={evaluation} />
 
-            <div className="pointer-events-none absolute inset-0 grid grid-cols-8 grid-rows-8 select-none">
-                {chessBoardView.map((row, x) =>
-                    row.map((fen, y) => <Piece key={`${x}-${y}`} coords={{ x, y }} fen={fen} />),
-                )}
-            </div>
+            <div className="relative aspect-square h-full">
+                <div className={cn("grid h-full w-fit grid-cols-8 grid-rows-8", isEngineTurn && "pointer-events-none")}>
+                    {Array.from({ length: 8 }).map((_, x) =>
+                        Array.from({ length: 8 }).map((_, y) => (
+                            <Tile
+                                key={`${x}-${y}`}
+                                coords={{ x, y }}
+                                isSquareDark={isSquareDark}
+                                isSquareSelected={isSquareSelected}
+                                isSquareMoveForSelectedPiece={isSquareMoveForSelectedPiece}
+                                isSquareCaptureForSelectedPiece={isSquareCaptureForSelectedPiece}
+                                isSquareLastMove={isSquareLastMove}
+                                isSquareChecked={isSquareChecked}
+                                isSquarePromotionSquare={isSquarePromotionSquare}
+                                onTileClicked={(coords) => {
+                                    selectPiece(coords);
+                                    placePiece(coords);
+                                }}
+                            />
+                        )),
+                    )}
+                </div>
 
-            <PromotionDialog
-                getPromotionOptions={getPromotionOptions}
-                onPromote={promotePiece}
-                isPromotionActive={isPromotionActive}
-            />
+                <div className="pointer-events-none absolute inset-0 grid grid-cols-8 grid-rows-8 select-none">
+                    {chessBoardView.map((row, x) =>
+                        row.map((fen, y) => <Piece key={`${x}-${y}`} coords={{ x, y }} fen={fen} />),
+                    )}
+                </div>
+
+                <PromotionDialog
+                    getPromotionOptions={getPromotionOptions}
+                    onPromote={promotePiece}
+                    isPromotionActive={isPromotionActive}
+                />
+            </div>
         </main>
     );
 };
