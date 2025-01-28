@@ -11,7 +11,7 @@ import Tile from "@/component/Tile";
 import { cn } from "@/lib/cn";
 import { chessBoardAtom } from "@/state/game";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core";
-import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 
@@ -190,7 +190,11 @@ const Board = () => {
             <EvaluationBar evaluation={evaluation} mateIn={mateIn} gameOver={chessBoard.gameOver} />
 
             <div className="relative aspect-square h-full">
-                <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
+                <DndContext
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    modifiers={[restrictToWindowEdges, snapCenterToCursor]}
+                >
                     <div
                         className={cn(
                             "grid h-full w-fit grid-cols-8 grid-rows-8",
