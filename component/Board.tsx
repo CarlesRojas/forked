@@ -1,14 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { ChessBoard } from "@/chess/ChessBoard";
 import { useStockfish } from "@/chess/stockfish/useStockfish";
-import { CheckState, Color, Coords, Fen, LastMove, SelectedSquare } from "@/chess/type";
+import { CheckState, Color, Coords, Fen, LastMove, PieceImage, SelectedSquare } from "@/chess/type";
 import EvaluationBar from "@/component/EvaluationBar";
 import Piece from "@/component/Piece";
 import PromotionDialog from "@/component/PromotionDialog";
 import Tile from "@/component/Tile";
 import { cn } from "@/lib/cn";
 import { chessBoardAtom } from "@/state/game";
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 
@@ -27,6 +30,8 @@ const Board = () => {
     const { evaluate, bestMove, mateIn, evaluation } = useStockfish();
 
     const [isEngineTurn, setIsEngineTurn] = useState<boolean>(false);
+
+    const [draggedPiece, setDraggedPiece] = useState<{ fen: Fen; coords: Coords } | null>(null);
 
     const getPromotionOptions = () => {
         return chessBoard.playerColor === Color.WHITE
@@ -148,49 +153,105 @@ const Board = () => {
         }
     }, [bestMove, isEngineTurn, updateBoard]);
 
+    const handleDragEnd = (event: DragEndEvent) => {
+        setDraggedPiece(null);
+        const { active, over } = event;
+        if (!over) return;
+
+        const fromCoords: Coords = JSON.parse(active.id as string);
+        const toCoords: Coords = JSON.parse(over.id as string);
+
+        placePiece(toCoords);
+        if (fromCoords.x !== toCoords.x || fromCoords.y !== toCoords.y) selectPiece(fromCoords);
+    };
+
+    const handleDragStart = (event: DragStartEvent) => {
+        const fromCoords: Coords = JSON.parse(event.active.id as string);
+        const fen = chessBoard.chessBoardView[fromCoords.x][fromCoords.y];
+        if (fen) {
+            setDraggedPiece({ fen, coords: fromCoords });
+        }
+
+        if (!selectedSquare.piece) {
+            selectPiece(fromCoords);
+            return;
+        }
+
+        const isSamePiece = selectedSquare.coords.x === fromCoords.x && selectedSquare.coords.y === fromCoords.y;
+
+        if (!isSamePiece) {
+            selectPiece(selectedSquare.coords);
+            selectPiece(fromCoords);
+        }
+    };
+
     return (
         <main className="relative flex h-full w-full gap-6">
             <EvaluationBar evaluation={evaluation} mateIn={mateIn} gameOver={chessBoard.gameOver} />
 
             <div className="relative aspect-square h-full">
-                <div
-                    className={cn(
-                        "grid h-full w-fit grid-cols-8 grid-rows-8",
-                        //  isEngineTurn && "pointer-events-none"
-                    )}
-                >
-                    {Array.from({ length: 8 }).map((_, x) =>
-                        Array.from({ length: 8 }).map((_, y) => (
-                            <Tile
-                                key={`${x}-${y}`}
-                                coords={{ x, y }}
-                                isSquareDark={isSquareDark}
-                                isSquareSelected={isSquareSelected}
-                                isSquareMoveForSelectedPiece={isSquareMoveForSelectedPiece}
-                                isSquareCaptureForSelectedPiece={isSquareCaptureForSelectedPiece}
-                                isSquareLastMove={isSquareLastMove}
-                                isSquareChecked={isSquareChecked}
-                                isSquarePromotionSquare={isSquarePromotionSquare}
-                                onTileClicked={(coords) => {
-                                    selectPiece(coords);
-                                    placePiece(coords);
-                                }}
-                            />
-                        )),
-                    )}
-                </div>
+                <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
+                    <div
+                        className={cn(
+                            "grid h-full w-fit grid-cols-8 grid-rows-8",
+                            isEngineTurn && "pointer-events-none",
+                        )}
+                    >
+                        {Array.from({ length: 8 }).map((_, x) =>
+                            Array.from({ length: 8 }).map((_, y) => (
+                                <Tile
+                                    key={`${x}-${y}`}
+                                    coords={{ x, y }}
+                                    isSquareDark={isSquareDark}
+                                    isSquareSelected={isSquareSelected}
+                                    isSquareMoveForSelectedPiece={isSquareMoveForSelectedPiece}
+                                    isSquareCaptureForSelectedPiece={isSquareCaptureForSelectedPiece}
+                                    isSquareLastMove={isSquareLastMove}
+                                    isSquareChecked={isSquareChecked}
+                                    isSquarePromotionSquare={isSquarePromotionSquare}
+                                    onTileClicked={(coords) => {
+                                        selectPiece(coords);
+                                        placePiece(coords);
+                                    }}
+                                />
+                            )),
+                        )}
+                    </div>
 
-                <div className="pointer-events-none absolute inset-0 grid grid-cols-8 grid-rows-8 select-none">
-                    {chessBoardView.map((row, x) =>
-                        row.map((fen, y) => <Piece key={`${x}-${y}`} coords={{ x, y }} fen={fen} />),
-                    )}
-                </div>
+                    <div className="absolute inset-0 z-10 grid grid-cols-8 grid-rows-8 select-none">
+                        {chessBoardView
+                            .map((row, x) =>
+                                row.map((fen, y) => (
+                                    <Piece
+                                        key={`${x}-${y}`}
+                                        coords={{ x, y }}
+                                        fen={fen}
+                                        onPieceClicked={(coords) => selectPiece(coords)}
+                                    />
+                                )),
+                            )
+                            .reverse()}
+                    </div>
 
-                <PromotionDialog
-                    getPromotionOptions={getPromotionOptions}
-                    onPromote={promotePiece}
-                    isPromotionActive={isPromotionActive}
-                />
+                    <DragOverlay>
+                        {draggedPiece ? (
+                            <div className="relative flex size-full items-center justify-center">
+                                <img
+                                    className="pointer-events-none h-[70%] w-[70%] select-none"
+                                    style={{ imageRendering: "pixelated" }}
+                                    src={PieceImage[draggedPiece.fen]}
+                                    alt={`${draggedPiece.fen} piece`}
+                                />
+                            </div>
+                        ) : null}
+                    </DragOverlay>
+
+                    <PromotionDialog
+                        getPromotionOptions={getPromotionOptions}
+                        onPromote={promotePiece}
+                        isPromotionActive={isPromotionActive}
+                    />
+                </DndContext>
             </div>
         </main>
     );

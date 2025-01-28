@@ -1,6 +1,7 @@
 import { COLUMNS, ROWS } from "@/chess/const";
 import { Coords } from "@/chess/type";
 import { cn } from "@/lib/cn";
+import { useDroppable } from "@dnd-kit/core";
 
 interface Props {
     coords: Coords;
@@ -24,6 +25,8 @@ const Tile = ({
     isSquareChecked,
     onTileClicked,
 }: Props) => {
+    const { setNodeRef } = useDroppable({ id: JSON.stringify(coords) });
+
     const isDark = isSquareDark(coords);
     const color = cn(
         isDark ? "bg-black-square" : "bg-white-square",
@@ -37,6 +40,7 @@ const Tile = ({
 
     return (
         <div
+            ref={setNodeRef}
             className={cn("relative flex aspect-square size-full items-center justify-center", color)}
             style={{ gridColumnStart: coords.y + 1, gridRowStart: 8 - coords.x }}
             onClick={() => onTileClicked(coords)}
@@ -51,7 +55,7 @@ const Tile = ({
                 )
             )}
 
-            <p className="absolute right-1 bottom-1 text-sm font-bold tracking-widest text-black/30">{`${COLUMNS[coords.y]}${ROWS[coords.x]}`}</p>
+            <p className="pointer-events-none absolute right-1 bottom-1 text-sm font-bold tracking-widest text-black/30 select-none">{`${COLUMNS[coords.y]}${ROWS[coords.x]}`}</p>
         </div>
     );
 };
