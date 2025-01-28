@@ -1,7 +1,7 @@
 import { COLUMNS, ROWS } from "@/chess/const";
 import { Color, Coords, Fen } from "@/chess/type";
 
-const stockfish = new Worker("./engine/stockfish.wasm.js");
+const stockfish = new Worker("/engine/stockfish.wasm.js");
 
 export type EngineMove = { from: Coords; to: Coords; promotion?: Fen };
 export type EngineMateIn = { moves: number; color: Color };

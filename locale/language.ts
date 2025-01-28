@@ -11,6 +11,11 @@ export const LanguageObjectSchema = z.object({
     enum: z.object({
         language: z.object(Object.fromEntries(Object.values(Language).map((item) => [item, z.string()]))),
     }),
+
+    mainMenu: z.object({
+        title: z.string(),
+        play: z.string(),
+    }),
 });
 
 export type LanguageObject = z.infer<typeof LanguageObjectSchema>;

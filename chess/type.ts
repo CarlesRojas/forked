@@ -26,18 +26,18 @@ export enum Fen {
 }
 
 export const PieceImage: Readonly<Record<Fen, string>> = {
-    [Fen.WHITE_PAWN]: "asset/piece/white/pawn.png",
-    [Fen.WHITE_KNIGHT]: "asset/piece/white/knight.png",
-    [Fen.WHITE_BISHOP]: "asset/piece/white/bishop.png",
-    [Fen.WHITE_ROOK]: "asset/piece/white/rook.png",
-    [Fen.WHITE_QUEEN]: "asset/piece/white/queen.png",
-    [Fen.WHITE_KING]: "asset/piece/white/king.png",
-    [Fen.BLACK_PAWN]: "asset/piece/black/pawn.png",
-    [Fen.BLACK_KNIGHT]: "asset/piece/black/knight.png",
-    [Fen.BLACK_BISHOP]: "asset/piece/black/bishop.png",
-    [Fen.BLACK_ROOK]: "asset/piece/black/rook.png",
-    [Fen.BLACK_QUEEN]: "asset/piece/black/queen.png",
-    [Fen.BLACK_KING]: "asset/piece/black/king.png",
+    [Fen.WHITE_PAWN]: "/asset/piece/white/pawn.png",
+    [Fen.WHITE_KNIGHT]: "/asset/piece/white/knight.png",
+    [Fen.WHITE_BISHOP]: "/asset/piece/white/bishop.png",
+    [Fen.WHITE_ROOK]: "/asset/piece/white/rook.png",
+    [Fen.WHITE_QUEEN]: "/asset/piece/white/queen.png",
+    [Fen.WHITE_KING]: "/asset/piece/white/king.png",
+    [Fen.BLACK_PAWN]: "/asset/piece/black/pawn.png",
+    [Fen.BLACK_KNIGHT]: "/asset/piece/black/knight.png",
+    [Fen.BLACK_BISHOP]: "/asset/piece/black/bishop.png",
+    [Fen.BLACK_ROOK]: "/asset/piece/black/rook.png",
+    [Fen.BLACK_QUEEN]: "/asset/piece/black/queen.png",
+    [Fen.BLACK_KING]: "/asset/piece/black/king.png",
 };
 
 export type SafeSquares = Map<string, Coords[]>;
