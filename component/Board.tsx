@@ -247,7 +247,7 @@ const Board = () => {
                 <PromotionDialog
                     getPromotionOptions={getPromotionOptions}
                     onPromote={promotePiece}
-                    isPromotionActive={true}
+                    isPromotionActive={isPromotionActive}
                 />
             </div>
         </main>

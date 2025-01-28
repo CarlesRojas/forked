@@ -52,7 +52,19 @@ const Tile = ({
                 )
             )}
 
-            <p className="pointer-events-none absolute right-1 bottom-1 text-sm font-bold tracking-widest text-black/30 select-none">{`${COLUMNS[coords.y]}${ROWS[coords.x]}`}</p>
+            <svg
+                viewBox="0 0 100 100"
+                className="pointer-events-none absolute right-0 -bottom-[2%] size-1/5 select-none"
+            >
+                <text
+                    x="50%"
+                    y="50%"
+                    dominantBaseline="middle"
+                    textAnchor="middle"
+                    className="fill-black/35 font-bold"
+                    style={{ fontSize: "50px" }}
+                >{`${COLUMNS[coords.y]}${ROWS[coords.x]}`}</text>
+            </svg>
         </div>
     );
 };
