@@ -242,13 +242,13 @@ const Board = () => {
                             </div>
                         ) : null}
                     </DragOverlay>
-
-                    <PromotionDialog
-                        getPromotionOptions={getPromotionOptions}
-                        onPromote={promotePiece}
-                        isPromotionActive={isPromotionActive}
-                    />
                 </DndContext>
+
+                <PromotionDialog
+                    getPromotionOptions={getPromotionOptions}
+                    onPromote={promotePiece}
+                    isPromotionActive={true}
+                />
             </div>
         </main>
     );

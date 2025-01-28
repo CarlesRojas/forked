@@ -9,7 +9,7 @@ interface Props {
     onPieceClicked: (coords: Coords) => void;
 }
 
-const playerPieces = [
+export const playerPieces = [
     Fen.WHITE_PAWN,
     Fen.WHITE_ROOK,
     Fen.WHITE_KNIGHT,
