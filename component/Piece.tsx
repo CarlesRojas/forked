@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Coords, Fen, PieceImage } from "@/chess/type";
+import { cn } from "@/lib/cn";
 import { useDraggable } from "@dnd-kit/core";
 
 interface Props {
@@ -7,6 +8,15 @@ interface Props {
     coords: Coords;
     onPieceClicked: (coords: Coords) => void;
 }
+
+const playerPieces = [
+    Fen.WHITE_PAWN,
+    Fen.WHITE_ROOK,
+    Fen.WHITE_KNIGHT,
+    Fen.WHITE_BISHOP,
+    Fen.WHITE_QUEEN,
+    Fen.WHITE_KING,
+];
 
 const Piece = ({ fen, coords, onPieceClicked }: Props) => {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -20,7 +30,7 @@ const Piece = ({ fen, coords, onPieceClicked }: Props) => {
           }
         : undefined;
 
-    if (!fen) return <div className="h-full w-full" />;
+    if (!fen) return <div className="h-full w-full" onClick={() => onPieceClicked(coords)} />;
 
     return (
         <div
@@ -28,7 +38,10 @@ const Piece = ({ fen, coords, onPieceClicked }: Props) => {
             style={style}
             {...listeners}
             {...attributes}
-            className="relative flex size-full items-center justify-center"
+            className={cn(
+                "relative flex size-full items-center justify-center",
+                !playerPieces.includes(fen) && "pointer-events-none",
+            )}
             onClick={() => onPieceClicked(coords)}
         >
             <img

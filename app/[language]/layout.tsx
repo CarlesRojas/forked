@@ -30,7 +30,7 @@ const RootLayout = async ({ children, params }: Readonly<LayoutProps>) => {
     return (
         <html
             lang={language}
-            className="bg-trout-700 h-dvh max-h-dvh min-h-dvh w-dvw max-w-dvw min-w-dvw overflow-hidden text-white"
+            className="bg-trout-700 h-dvh max-h-dvh min-h-dvh w-dvw max-w-dvw min-w-dvw touch-none overflow-hidden text-white"
             suppressHydrationWarning
         >
             <body className={`${kode.className} relative size-full overflow-hidden`}>

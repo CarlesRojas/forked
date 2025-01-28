@@ -12,7 +12,6 @@ interface Props {
     isSquareLastMove: (coords: Coords) => boolean;
     isSquareChecked: (coords: Coords) => boolean;
     isSquarePromotionSquare: (coords: Coords) => boolean;
-    onTileClicked: (coords: Coords) => void;
 }
 
 const Tile = ({
@@ -23,7 +22,6 @@ const Tile = ({
     isSquareMoveForSelectedPiece,
     isSquareCaptureForSelectedPiece,
     isSquareChecked,
-    onTileClicked,
 }: Props) => {
     const { setNodeRef } = useDroppable({ id: JSON.stringify(coords) });
 
@@ -43,7 +41,6 @@ const Tile = ({
             ref={setNodeRef}
             className={cn("relative flex aspect-square size-full items-center justify-center", color)}
             style={{ gridColumnStart: coords.y + 1, gridRowStart: 8 - coords.x }}
-            onClick={() => onTileClicked(coords)}
         >
             {isSquareCaptureForSelectedPiece(coords) ? (
                 <div className="pointer-events-none flex size-full items-center justify-center rounded-full bg-black/15 select-none">

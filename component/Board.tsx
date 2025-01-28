@@ -10,7 +10,7 @@ import PromotionDialog from "@/component/PromotionDialog";
 import Tile from "@/component/Tile";
 import { cn } from "@/lib/cn";
 import { chessBoardAtom } from "@/state/game";
-import { DndContext, DragEndEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor } from "@dnd-kit/core";
 import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useState } from "react";
@@ -153,24 +153,22 @@ const Board = () => {
         }
     }, [bestMove, isEngineTurn, updateBoard]);
 
-    const handleDragEnd = (event: DragEndEvent) => {
+    const pointerSensor = useSensor(PointerSensor, {
+        activationConstraint: { distance: 10 },
+    });
+
+    const handleDragEnd = ({ over }: DragEndEvent) => {
         setDraggedPiece(null);
-        const { active, over } = event;
         if (!over) return;
 
-        const fromCoords: Coords = JSON.parse(active.id as string);
         const toCoords: Coords = JSON.parse(over.id as string);
-
         placePiece(toCoords);
-        if (fromCoords.x !== toCoords.x || fromCoords.y !== toCoords.y) selectPiece(fromCoords);
     };
 
     const handleDragStart = (event: DragStartEvent) => {
         const fromCoords: Coords = JSON.parse(event.active.id as string);
         const fen = chessBoard.chessBoardView[fromCoords.x][fromCoords.y];
-        if (fen) {
-            setDraggedPiece({ fen, coords: fromCoords });
-        }
+        if (fen) setDraggedPiece({ fen, coords: fromCoords });
 
         if (!selectedSquare.piece) {
             selectPiece(fromCoords);
@@ -189,18 +187,14 @@ const Board = () => {
         <main className="relative flex h-full w-full gap-6">
             <EvaluationBar evaluation={evaluation} mateIn={mateIn} gameOver={chessBoard.gameOver} />
 
-            <div className="relative aspect-square h-full">
+            <div className={cn("relative aspect-square h-full", isEngineTurn && "pointer-events-none")}>
                 <DndContext
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     modifiers={[restrictToWindowEdges, snapCenterToCursor]}
+                    sensors={[pointerSensor]}
                 >
-                    <div
-                        className={cn(
-                            "grid h-full w-fit grid-cols-8 grid-rows-8",
-                            isEngineTurn && "pointer-events-none",
-                        )}
-                    >
+                    <div className="pointer-events-none grid h-full w-fit grid-cols-8 grid-rows-8">
                         {Array.from({ length: 8 }).map((_, x) =>
                             Array.from({ length: 8 }).map((_, y) => (
                                 <Tile
@@ -213,10 +207,6 @@ const Board = () => {
                                     isSquareLastMove={isSquareLastMove}
                                     isSquareChecked={isSquareChecked}
                                     isSquarePromotionSquare={isSquarePromotionSquare}
-                                    onTileClicked={(coords) => {
-                                        selectPiece(coords);
-                                        placePiece(coords);
-                                    }}
                                 />
                             )),
                         )}
@@ -230,7 +220,10 @@ const Board = () => {
                                         key={`${x}-${y}`}
                                         coords={{ x, y }}
                                         fen={fen}
-                                        onPieceClicked={(coords) => selectPiece(coords)}
+                                        onPieceClicked={(coords) => {
+                                            selectPiece(coords);
+                                            placePiece(coords);
+                                        }}
                                     />
                                 )),
                             )
