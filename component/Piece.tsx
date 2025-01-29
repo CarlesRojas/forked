@@ -39,13 +39,16 @@ const Piece = ({ fen, coords, onPieceClicked }: Props) => {
             {...listeners}
             {...attributes}
             className={cn(
-                "relative flex size-full items-center justify-center",
+                "group relative flex size-full items-center justify-center",
                 !playerPieces.includes(fen) && "pointer-events-none",
             )}
             onClick={() => onPieceClicked(coords)}
         >
             <img
-                className="pointer-events-none h-[70%] w-[70%] select-none"
+                className={cn(
+                    "pointer-events-none h-[70%] w-[70%] transition-transform select-none",
+                    !transform && "group-hover:scale-105",
+                )}
                 style={{ imageRendering: "pixelated" }}
                 src={PieceImage[fen]}
                 alt={`${fen} piece`}
