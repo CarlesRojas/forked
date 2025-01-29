@@ -74,7 +74,7 @@ const Tile = ({
                     y="50%"
                     dominantBaseline="middle"
                     textAnchor="middle"
-                    className="fill-black/35 font-bold"
+                    className="fill-black/25 font-bold"
                     style={{ fontSize: "50px" }}
                 >{`${COLUMNS[coords.y]}${ROWS[coords.x]}`}</text>
             </svg>

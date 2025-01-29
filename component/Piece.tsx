@@ -45,11 +45,7 @@ const Piece = ({ fen, coords, onPieceClicked }: Props) => {
             onClick={() => onPieceClicked(coords)}
         >
             <img
-                className={cn(
-                    "pointer-events-none h-[70%] w-[70%] transition-transform select-none",
-                    !transform && "group-hover:scale-105",
-                )}
-                style={{ imageRendering: "pixelated" }}
+                className={cn("pointer-events-none h-[70%] w-[70%] select-none", !transform && "group-hover:scale-105")}
                 src={PieceImage[fen]}
                 alt={`${fen} piece`}
             />
