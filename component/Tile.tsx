@@ -23,7 +23,8 @@ const Tile = ({
     isSquareCaptureForSelectedPiece,
     isSquareChecked,
 }: Props) => {
-    const { setNodeRef } = useDroppable({ id: JSON.stringify(coords) });
+    const { setNodeRef, active, isOver } = useDroppable({ id: JSON.stringify(coords) });
+    console.log(JSON.stringify(coords), active, isOver);
 
     const isDark = isSquareDark(coords);
     const color = cn(
@@ -39,12 +40,24 @@ const Tile = ({
     return (
         <div
             ref={setNodeRef}
-            className={cn("relative flex aspect-square size-full items-center justify-center", color)}
+            className={cn(
+                "relative flex aspect-square size-full items-center justify-center",
+                color,
+                isOver && isSquareMoveForSelectedPiece(coords) && isDark && "bg-black-blue-square",
+                isOver && isSquareMoveForSelectedPiece(coords) && !isDark && "bg-white-blue-square",
+            )}
             style={{ gridColumnStart: coords.y + 1, gridRowStart: 8 - coords.x }}
         >
             {isSquareCaptureForSelectedPiece(coords) ? (
                 <div className="pointer-events-none flex size-full items-center justify-center rounded-full bg-black/15 select-none">
-                    <div className={cn("size-5/6 rounded-full", color)} />
+                    <div
+                        className={cn(
+                            "size-5/6 rounded-full",
+                            color,
+                            isOver && isDark && "bg-black-blue-square",
+                            isOver && !isDark && "bg-white-blue-square",
+                        )}
+                    />
                 </div>
             ) : (
                 isSquareMoveForSelectedPiece(coords) && (
