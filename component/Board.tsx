@@ -9,14 +9,18 @@ import Piece from "@/component/Piece";
 import PromotionDialog from "@/component/PromotionDialog";
 import Tile from "@/component/Tile";
 import { cn } from "@/lib/cn";
-import { chessBoardAtom } from "@/state/game";
+import { savedChessboardAtom } from "@/state/game";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor } from "@dnd-kit/core";
 import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers";
-import { useAtomValue } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 
-const Board = () => {
-    const chessBoard = useAtomValue(chessBoardAtom);
+interface Props {
+    chessBoard: ChessBoard;
+}
+
+const Board = ({ chessBoard }: Props) => {
+    const setSavedChessboard = useSetAtom(savedChessboardAtom);
     const [chessBoardView, setChessBoardView] = useState(chessBoard.chessBoardView);
 
     const [selectedSquare, setSelectedSquare] = useState<SelectedSquare>({ piece: null });
@@ -117,9 +121,10 @@ const Board = () => {
             unmarkMoves();
 
             setIsEngineTurn(chessBoard.playerColor === Color.BLACK);
+            setSavedChessboard(chessBoard.serialize());
             evaluate({ fen: chessBoard.boardAsFEN, isGameOver: chessBoard.isGameOver, turn: chessBoard.playerColor });
         },
-        [chessBoard, evaluate, unmarkMoves],
+        [chessBoard, evaluate, unmarkMoves, setSavedChessboard],
     );
 
     const placePiece = (newCoords: Coords) => {

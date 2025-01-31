@@ -37,4 +37,10 @@ export class Rook extends Piece {
     public override toType(): PieceType {
         return { fen: this.fen, material: this.material, base: this.base, hasMoved: this._hasMoved };
     }
+
+    public static fromType(piece: PieceType): Rook {
+        const newRook = new Rook(piece.fen === Fen.WHITE_ROOK ? Color.WHITE : Color.BLACK, piece.material, piece.base);
+        if (piece.hasMoved) newRook.hasMoved = true;
+        return newRook;
+    }
 }

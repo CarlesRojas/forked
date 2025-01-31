@@ -23,8 +23,7 @@ const Tile = ({
     isSquareCaptureForSelectedPiece,
     isSquareChecked,
 }: Props) => {
-    const { setNodeRef, active, isOver } = useDroppable({ id: JSON.stringify(coords) });
-    console.log(JSON.stringify(coords), active, isOver);
+    const { setNodeRef, isOver } = useDroppable({ id: JSON.stringify(coords) });
 
     const isDark = isSquareDark(coords);
     const color = cn(

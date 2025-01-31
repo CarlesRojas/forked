@@ -30,4 +30,8 @@ export class Knight extends Piece {
     public override toType(): PieceType {
         return { fen: this.fen, material: this.material, base: this.base };
     }
+
+    public static fromType(piece: PieceType): Knight {
+        return new Knight(piece.fen === Fen.WHITE_KNIGHT ? Color.WHITE : Color.BLACK, piece.material, piece.base);
+    }
 }

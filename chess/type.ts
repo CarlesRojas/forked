@@ -1,3 +1,4 @@
+import { Piece } from "@/chess/piece/Piece";
 import { z } from "zod";
 
 export enum Color {
@@ -76,7 +77,7 @@ export const CoordsSchema = z.object({
 });
 export type Coords = z.infer<typeof CoordsSchema>;
 
-export const SafeSquaresSchema = z.record(z.string(), z.array(CoordsSchema));
+export const SafeSquaresSchema = z.map(z.string(), z.array(CoordsSchema));
 export type SafeSquares = z.infer<typeof SafeSquaresSchema>;
 
 export const PieceTypeSchema = z.object({
@@ -87,7 +88,7 @@ export const PieceTypeSchema = z.object({
 });
 export type PieceType = z.infer<typeof PieceTypeSchema>;
 
-export const LastMoveSchema = z.object({
+export const LastMoveTypeSchema = z.object({
     piece: PieceTypeSchema,
     prevX: z.number(),
     prevY: z.number(),
@@ -95,7 +96,16 @@ export const LastMoveSchema = z.object({
     currY: z.number(),
     moveType: z.set(z.nativeEnum(MoveType)),
 });
-export type LastMove = z.infer<typeof LastMoveSchema>;
+export type LastMoveType = z.infer<typeof LastMoveTypeSchema>;
+
+export type LastMove = {
+    piece: Piece;
+    prevX: number;
+    prevY: number;
+    currX: number;
+    currY: number;
+    moveType: Set<MoveType>;
+};
 
 export const KingCheckedSchema = z.object({
     isInCheck: z.literal(true),
@@ -109,18 +119,24 @@ export const KingNotCheckedSchema = z.object({
 export const CheckStateSchema = z.discriminatedUnion("isInCheck", [KingCheckedSchema, KingNotCheckedSchema]);
 export type CheckState = z.infer<typeof CheckStateSchema>;
 
-export const MoveListSchema = z.array(z.tuple([z.string(), z.string().optional()]));
+export const MoveListSchema = z.array(z.tuple([z.string()]).or(z.tuple([z.string(), z.string()])));
 export type MoveList = z.infer<typeof MoveListSchema>;
 
-export const GameStateSchema = z.object({
-    lastMove: LastMoveSchema.optional(),
+type GameState = {
+    lastMove: LastMove | undefined;
+    checkState: CheckState;
+    board: (Fen | null)[][];
+};
+export type GameHistory = GameState[];
+
+const GameStateTypeSchema = z.object({
+    lastMove: LastMoveTypeSchema.optional(),
     checkState: CheckStateSchema,
     board: z.array(z.array(z.union([z.nativeEnum(Fen), z.null()]))),
 });
-export type GameState = z.infer<typeof GameStateSchema>;
 
-export const GameHistorySchema = z.array(GameStateSchema);
-export type GameHistory = z.infer<typeof GameHistorySchema>;
+export const GameHistoryTypeSchema = z.array(GameStateTypeSchema);
+export type GameHistoryType = z.infer<typeof GameHistoryTypeSchema>;
 
 export const SquareWithPieceSchema = z.object({
     piece: z.nativeEnum(Fen),
@@ -148,3 +164,23 @@ export const GameOverSchema = z.object({
     reason: z.nativeEnum(GameOverReason),
 });
 export type GameOver = z.infer<typeof GameOverSchema>;
+
+export const BoardSchema = z.array(z.array(z.union([PieceTypeSchema, z.null()])));
+export type Board = z.infer<typeof BoardSchema>;
+
+export const SavedGameSchema = z.object({
+    board: BoardSchema,
+    playerColor: z.nativeEnum(Color),
+    lastMove: LastMoveTypeSchema.nullable(),
+    checkState: CheckStateSchema,
+    fiftyMoveRuleCounter: z.number(),
+    isGameOver: z.boolean(),
+    gameOver: GameOverSchema.nullable(),
+    fullNumberOfMoves: z.number(),
+    threeFoldRepetitionDictionary: z.array(z.tuple([z.string(), z.number()])),
+    threeFoldRepetitionFlag: z.boolean(),
+    boardAsFEN: z.string(),
+    moveList: MoveListSchema,
+    gameHistory: GameHistoryTypeSchema,
+});
+export type SavedGame = z.infer<typeof SavedGameSchema>;

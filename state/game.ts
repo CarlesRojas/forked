@@ -1,4 +1,3 @@
-import { ChessBoard } from "@/chess/ChessBoard";
-import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
-export const chessBoardAtom = atom(new ChessBoard());
+export const savedChessboardAtom = atomWithStorage("savedChessboard", "");

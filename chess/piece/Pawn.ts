@@ -48,4 +48,10 @@ export class Pawn extends Piece {
     public override toType(): PieceType {
         return { fen: this.fen, material: this.material, base: this.base, hasMoved: this._hasMoved };
     }
+
+    public static fromType(piece: PieceType): Pawn {
+        const newPawn = new Pawn(piece.fen === Fen.WHITE_PAWN ? Color.WHITE : Color.BLACK, piece.material, piece.base);
+        if (piece.hasMoved) newPawn.hasMoved = true;
+        return newPawn;
+    }
 }

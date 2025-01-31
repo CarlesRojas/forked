@@ -30,4 +30,8 @@ export class Queen extends Piece {
     public override toType(): PieceType {
         return { fen: this.fen, material: this.material, base: this.base };
     }
+
+    public static fromType(piece: PieceType): Queen {
+        return new Queen(piece.fen === Fen.WHITE_QUEEN ? Color.WHITE : Color.BLACK, piece.material, piece.base);
+    }
 }

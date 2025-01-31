@@ -1,4 +1,4 @@
-import { COLUMNS } from "@/chess/const";
+import { COLUMNS, DEFAULT_SAVED_GAME } from "@/chess/const";
 import { FenConverter } from "@/chess/FenConverter";
 import { Bishop } from "@/chess/piece/Bishop";
 import { King } from "@/chess/piece/King";
@@ -20,7 +20,10 @@ import {
     Material,
     MoveList,
     MoveType,
+    PieceType,
     SafeSquares,
+    SavedGame,
+    SavedGameSchema,
 } from "@/chess/type";
 
 export class ChessBoard {
@@ -45,98 +48,35 @@ export class ChessBoard {
     private _moveList: MoveList = [];
     private _gameHistory: GameHistory;
 
-    constructor() {
-        this._chessBoard = [
-            [
-                new Rook(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Knight(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Bishop(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Queen(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new King(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Bishop(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Knight(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Rook(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-            ],
-            [
-                new Pawn(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.WHITE, Material.DEFAULT, Base.DEFAULT),
-            ],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [
-                new Pawn(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Pawn(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-            ],
-            [
-                new Rook(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Knight(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Bishop(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Queen(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new King(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Bishop(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Knight(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-                new Rook(Color.BLACK, Material.DEFAULT, Base.DEFAULT),
-            ],
-        ];
-        this._safeSquares = this.findSafeSqures();
-        this._gameHistory = [{ board: this.chessBoardView, lastMove: this._lastMove, checkState: this._checkState }];
-        this._boardAsFEN = this._fenConverter.convertBoardToFEN(
-            this._chessBoard,
-            this._playerColor,
-            this._lastMove,
-            this._fiftyMoveRuleCounter,
-            this._fullNumberOfMoves,
-        );
-    }
-
-    public clone(): ChessBoard {
-        const newBoard = new ChessBoard();
-
-        newBoard._chessBoard = this._chessBoard.map((row) => row.map((piece) => (piece ? piece.clone() : null)));
-
-        newBoard._playerColor = this._playerColor;
-        newBoard._fiftyMoveRuleCounter = this._fiftyMoveRuleCounter;
-        newBoard._isGameOver = this._isGameOver;
-        newBoard._gameOver = this._gameOver;
-        newBoard._fullNumberOfMoves = this._fullNumberOfMoves;
-        newBoard._threeFoldRepetitionFlag = this._threeFoldRepetitionFlag;
-        newBoard._boardAsFEN = this._boardAsFEN;
-
-        newBoard._safeSquares = new Map(
-            Array.from(this._safeSquares.entries()).map(([key, coords]) => [key, [...coords]]),
-        );
-
-        newBoard._lastMove = this._lastMove
+    constructor(savedGame: SavedGame = DEFAULT_SAVED_GAME) {
+        this._chessBoard = savedGame.board.map((row) => row.map((piece) => (piece ? instantiatePiece(piece) : null)));
+        this._playerColor = savedGame.playerColor;
+        this._lastMove = savedGame.lastMove
             ? {
-                  ...this._lastMove,
-                  piece: this._lastMove.piece.clone(),
-                  moveType: new Set([...this._lastMove.moveType]),
+                  ...savedGame.lastMove,
+                  piece: instantiatePiece(savedGame.lastMove.piece),
               }
             : undefined;
+        this._checkState = savedGame.checkState;
+        this._fiftyMoveRuleCounter = savedGame.fiftyMoveRuleCounter;
+        this._isGameOver = savedGame.isGameOver;
+        this._gameOver = savedGame.gameOver ?? undefined;
+        this._fullNumberOfMoves = savedGame.fullNumberOfMoves;
+        this._threeFoldRepetitionDictionary = new Map(savedGame.threeFoldRepetitionDictionary);
+        this._threeFoldRepetitionFlag = savedGame.threeFoldRepetitionFlag;
+        this._boardAsFEN = savedGame.boardAsFEN;
+        this._moveList = savedGame.moveList;
+        this._gameHistory = savedGame.gameHistory.map((gameState) => ({
+            ...gameState,
+            lastMove: gameState.lastMove
+                ? {
+                      ...gameState.lastMove,
+                      piece: instantiatePiece(gameState.lastMove.piece),
+                  }
+                : undefined,
+        }));
 
-        newBoard._checkState = this._checkState.isInCheck
-            ? { ...this._checkState, coords: { ...this._checkState.coords } }
-            : { ...this._checkState };
-
-        newBoard._threeFoldRepetitionDictionary = new Map(
-            Array.from(this._threeFoldRepetitionDictionary.entries()).map(([key, value]) => [key, value]),
-        );
-
-        return newBoard;
+        this._safeSquares = this.findSafeSqures();
     }
 
     public get board(): (Piece | null)[][] {
@@ -673,4 +613,55 @@ export class ChessBoard {
     public willMoveBePromotion(fen: Fen, to: Coords): boolean {
         return (fen === Fen.WHITE_PAWN || fen === Fen.BLACK_PAWN) && (to.x === 0 || to.x === 7);
     }
+
+    public serialize(): string {
+        const object: SavedGame = {
+            board: this._chessBoard.map((row) => row.map((piece) => (piece ? piece.toType() : null))),
+            playerColor: this._playerColor,
+            lastMove: this._lastMove
+                ? {
+                      ...this._lastMove,
+                      piece: this._lastMove.piece.toType(),
+                  }
+                : null,
+            checkState: this._checkState,
+            fiftyMoveRuleCounter: this._fiftyMoveRuleCounter,
+            isGameOver: this._isGameOver,
+            gameOver: this._gameOver ?? null,
+            fullNumberOfMoves: this._fullNumberOfMoves,
+            threeFoldRepetitionDictionary: Array.from(this._threeFoldRepetitionDictionary.entries()),
+            threeFoldRepetitionFlag: this._threeFoldRepetitionFlag,
+            boardAsFEN: this._boardAsFEN,
+            moveList: this._moveList,
+            gameHistory: this._gameHistory.map((gameState) => ({
+                ...gameState,
+                lastMove: gameState.lastMove
+                    ? { ...gameState.lastMove, piece: gameState.lastMove.piece.toType() }
+                    : undefined,
+            })),
+        };
+
+        return JSON.stringify(object);
+    }
+
+    public static deserialize(serialized: string): ChessBoard {
+        const rawObject = JSON.parse(serialized);
+        const savedGame = SavedGameSchema.safeParse(rawObject);
+        console.log(savedGame.error);
+
+        if (!savedGame.success) return new ChessBoard(DEFAULT_SAVED_GAME);
+
+        return new ChessBoard(savedGame.data);
+    }
+}
+
+function instantiatePiece(pieceType: PieceType) {
+    if ([Fen.WHITE_PAWN, Fen.BLACK_PAWN].includes(pieceType.fen)) return Pawn.fromType(pieceType);
+    if ([Fen.WHITE_KNIGHT, Fen.BLACK_KNIGHT].includes(pieceType.fen)) return Knight.fromType(pieceType);
+    if ([Fen.WHITE_BISHOP, Fen.BLACK_BISHOP].includes(pieceType.fen)) return Bishop.fromType(pieceType);
+    if ([Fen.WHITE_ROOK, Fen.BLACK_ROOK].includes(pieceType.fen)) return Rook.fromType(pieceType);
+    if ([Fen.WHITE_QUEEN, Fen.BLACK_QUEEN].includes(pieceType.fen)) return Queen.fromType(pieceType);
+    if ([Fen.WHITE_KING, Fen.BLACK_KING].includes(pieceType.fen)) return King.fromType(pieceType);
+
+    throw new Error("Invalid fen");
 }

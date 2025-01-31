@@ -26,4 +26,8 @@ export class Bishop extends Piece {
     public override toType(): PieceType {
         return { fen: this.fen, material: this.material, base: this.base };
     }
+
+    public static fromType(piece: PieceType): Bishop {
+        return new Bishop(piece.fen === Fen.WHITE_BISHOP ? Color.WHITE : Color.BLACK, piece.material, piece.base);
+    }
 }
