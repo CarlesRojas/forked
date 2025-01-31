@@ -12,15 +12,12 @@ import { cn } from "@/lib/cn";
 import { savedChessboardAtom } from "@/state/game";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor } from "@dnd-kit/core";
 import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers";
-import { useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 
-interface Props {
-    chessBoard: ChessBoard;
-}
-
-const Board = ({ chessBoard }: Props) => {
-    const setSavedChessboard = useSetAtom(savedChessboardAtom);
+const Board = () => {
+    const [savedChessBoard, setSavedChessBoard] = useAtom(savedChessboardAtom);
+    const [chessBoard] = useState(() => (savedChessBoard ? ChessBoard.deserialize(savedChessBoard) : new ChessBoard()));
     const [chessBoardView, setChessBoardView] = useState(chessBoard.chessBoardView);
 
     const [selectedSquare, setSelectedSquare] = useState<SelectedSquare>({ piece: null });
@@ -121,10 +118,10 @@ const Board = ({ chessBoard }: Props) => {
             unmarkMoves();
 
             setIsEngineTurn(chessBoard.playerColor === Color.BLACK);
-            setSavedChessboard(chessBoard.serialize());
+            setSavedChessBoard(chessBoard.serialize());
             evaluate({ fen: chessBoard.boardAsFEN, isGameOver: chessBoard.isGameOver, turn: chessBoard.playerColor });
         },
-        [chessBoard, evaluate, unmarkMoves, setSavedChessboard],
+        [chessBoard, evaluate, unmarkMoves, setSavedChessBoard],
     );
 
     const placePiece = (newCoords: Coords) => {
