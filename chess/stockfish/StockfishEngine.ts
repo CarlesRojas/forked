@@ -112,6 +112,29 @@ export default class StockfishEngine {
     evaluatePosition(fen: string, depth: number = 12) {
         if (depth > 24) depth = 24;
 
+        // Skill Level Elo
+        // 0    1347
+        // 1    1490
+        // 2    1597
+        // 3    1694
+        // 4    1785
+        // 5    1871
+        // 6    1954
+        // 7    2035
+        // 8    2113
+        // 9    2189
+        // 10   2264
+        // 11   2337
+        // 12   2409
+        // 13   2480
+        // 14   2550
+        // 15   2619
+        // 16   2686
+        // 17   2754
+        // 18   2820
+        // 19   2886
+
+        this.stockfish.postMessage("setoption name Skill Level value 0");
         this.stockfish.postMessage(`position fen ${fen}`);
         this.stockfish.postMessage(`go depth ${depth}`);
     }
