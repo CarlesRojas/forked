@@ -25,6 +25,24 @@ export enum Fen {
     BLACK_KING = "k",
 }
 
+export enum Material {
+    DEFAULT = "d",
+    SAPPHIRE = "s",
+    AMBER = "a",
+    GLASS = "l",
+    STEAL = "t",
+    GOLD = "g",
+    PAPER = "p",
+    EMERALD = "e",
+}
+
+export enum Base {
+    DEFAULT = "d",
+    SAPPHIRE = "s",
+    AMBER = "a",
+    GLASS = "l",
+}
+
 export const PieceImage: Readonly<Record<Fen, string>> = {
     [Fen.WHITE_PAWN]: "/asset/piece/white/pawn.png",
     [Fen.WHITE_KNIGHT]: "/asset/piece/white/knight.png",

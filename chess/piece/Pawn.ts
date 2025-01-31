@@ -1,5 +1,5 @@
 import { Piece } from "@/chess/piece/Piece";
-import { Color, Coords, Fen } from "@/chess/type";
+import { Base, Color, Coords, Fen, Material } from "@/chess/type";
 
 export class Pawn extends Piece {
     private _hasMoved: boolean = false;
@@ -11,8 +11,12 @@ export class Pawn extends Piece {
         { x: 1, y: -1 },
     ];
 
-    constructor(private pieceColor: Color) {
-        super(pieceColor);
+    constructor(
+        private pieceColor: Color,
+        private pieceMaterial: Material,
+        private pieceBase: Base,
+    ) {
+        super(pieceColor, pieceMaterial, pieceBase);
         if (pieceColor === Color.BLACK) this.setBlackPawnDirections();
         this._fen = pieceColor === Color.WHITE ? Fen.WHITE_PAWN : Fen.BLACK_PAWN;
     }
@@ -36,8 +40,24 @@ export class Pawn extends Piece {
     }
 
     public override clone(): Piece {
-        const newPawn = new Pawn(this.color);
+        const newPawn = new Pawn(this.color, this.material, this.base);
         if (this._hasMoved) newPawn.hasMoved = true;
+        return newPawn;
+    }
+
+    public override serialize(): string {
+        return JSON.stringify({
+            fen: this.fen,
+            material: this.material,
+            base: this.base,
+            hasMoved: this._hasMoved,
+        });
+    }
+
+    public override deserialize(serialized: string): Piece {
+        const { fen, material, base, hasMoved } = JSON.parse(serialized);
+        const newPawn = new Pawn(fen === Fen.WHITE_PAWN ? Color.WHITE : Color.BLACK, material, base);
+        if (hasMoved) newPawn.hasMoved = true;
         return newPawn;
     }
 }
