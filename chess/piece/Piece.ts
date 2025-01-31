@@ -1,4 +1,10 @@
-import { Base, Color, Coords, Fen, Material } from "@/chess/type";
+import { Bishop } from "@/chess/piece/Bishop";
+import { King } from "@/chess/piece/King";
+import { Knight } from "@/chess/piece/Knight";
+import { Pawn } from "@/chess/piece/Pawn";
+import { Queen } from "@/chess/piece/Queen";
+import { Rook } from "@/chess/piece/Rook";
+import { Base, Color, Coords, Fen, Material, PieceType } from "@/chess/type";
 
 export abstract class Piece {
     protected abstract _fen: Fen;
@@ -40,7 +46,56 @@ export abstract class Piece {
 
     public abstract clone(): Piece;
 
-    public abstract serialize(): string;
+    public abstract toType(): PieceType;
 
-    public abstract deserialize(serialized: string): Piece;
+    public fromType(piece: PieceType): Piece {
+        switch (piece.fen.toUpperCase()) {
+            case Fen.WHITE_PAWN:
+                const pawn = new Pawn(
+                    piece.fen === Fen.WHITE_PAWN ? Color.WHITE : Color.BLACK,
+                    piece.material,
+                    piece.base,
+                );
+                if (piece.hasMoved) pawn.hasMoved = true;
+                return pawn;
+
+            case Fen.WHITE_KNIGHT:
+                return new Knight(
+                    piece.fen === Fen.WHITE_KNIGHT ? Color.WHITE : Color.BLACK,
+                    piece.material,
+                    piece.base,
+                );
+
+            case Fen.WHITE_BISHOP:
+                return new Bishop(
+                    piece.fen === Fen.WHITE_BISHOP ? Color.WHITE : Color.BLACK,
+                    piece.material,
+                    piece.base,
+                );
+
+            case Fen.WHITE_ROOK:
+                const rook = new Rook(
+                    piece.fen === Fen.WHITE_ROOK ? Color.WHITE : Color.BLACK,
+                    piece.material,
+                    piece.base,
+                );
+                if (piece.hasMoved) rook.hasMoved = true;
+                return rook;
+
+            case Fen.WHITE_QUEEN:
+                return new Queen(piece.fen === Fen.WHITE_QUEEN ? Color.WHITE : Color.BLACK, piece.material, piece.base);
+
+            case Fen.WHITE_KING:
+                const king = new King(
+                    piece.fen === Fen.WHITE_KING ? Color.WHITE : Color.BLACK,
+                    piece.material,
+                    piece.base,
+                );
+                if (piece.hasMoved) king.hasMoved = true;
+                return king;
+
+            default:
+                throw new Error(`Invalid piece character: ${piece.fen}`);
+        }
+    }
 }

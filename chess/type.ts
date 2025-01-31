@@ -1,14 +1,9 @@
-import { Piece } from "@/chess/piece/Piece";
+import { z } from "zod";
 
 export enum Color {
     WHITE = "WHITE",
     BLACK = "BLACK",
 }
-
-export type Coords = {
-    x: number;
-    y: number;
-};
 
 export enum Fen {
     WHITE_PAWN = "P",
@@ -58,8 +53,6 @@ export const PieceImage: Readonly<Record<Fen, string>> = {
     [Fen.BLACK_KING]: "/asset/piece/black/king.png",
 };
 
-export type SafeSquares = Map<string, Coords[]>;
-
 export enum MoveType {
     MOVE = "MOVE",
     CAPTURE = "CAPTURE",
@@ -67,54 +60,6 @@ export enum MoveType {
     PROMOTE = "PROMOTE",
     CHECK = "CHECK",
     MATE = "MATE",
-}
-
-export type LastMove = {
-    piece: Piece;
-    prevX: number;
-    prevY: number;
-    currX: number;
-    currY: number;
-    moveType: Set<MoveType>;
-};
-
-type KingChecked = {
-    isInCheck: true;
-    coords: Coords;
-};
-
-type KingNotChecked = {
-    isInCheck: false;
-};
-
-export type CheckState = KingChecked | KingNotChecked;
-
-export type MoveList = [string, string?][];
-
-type GameState = {
-    lastMove: LastMove | undefined;
-    checkState: CheckState;
-    board: (Fen | null)[][];
-};
-
-export type GameHistory = GameState[];
-
-type SquareWithPiece = {
-    piece: Fen;
-    coords: Coords;
-};
-
-type SquareWithoutPiece = {
-    piece: null;
-};
-
-export type SelectedSquare = SquareWithPiece | SquareWithoutPiece;
-
-export interface Score {
-    from: Coords;
-    to: Coords;
-    score: number;
-    promotionPiece?: Fen | null;
 }
 
 export enum GameOverReason {
@@ -125,8 +70,81 @@ export enum GameOverReason {
     FIFTY_MOVE_RULE = "FIFTY_MOVE_RULE",
 }
 
-export interface GameOver {
-    isGameOver: true;
-    winner?: Color;
-    reason: GameOverReason;
-}
+export const CoordsSchema = z.object({
+    x: z.number(),
+    y: z.number(),
+});
+export type Coords = z.infer<typeof CoordsSchema>;
+
+export const SafeSquaresSchema = z.record(z.string(), z.array(CoordsSchema));
+export type SafeSquares = z.infer<typeof SafeSquaresSchema>;
+
+export const PieceTypeSchema = z.object({
+    fen: z.nativeEnum(Fen),
+    material: z.nativeEnum(Material),
+    base: z.nativeEnum(Base),
+    hasMoved: z.boolean().optional(),
+});
+export type PieceType = z.infer<typeof PieceTypeSchema>;
+
+export const LastMoveSchema = z.object({
+    piece: PieceTypeSchema,
+    prevX: z.number(),
+    prevY: z.number(),
+    currX: z.number(),
+    currY: z.number(),
+    moveType: z.set(z.nativeEnum(MoveType)),
+});
+export type LastMove = z.infer<typeof LastMoveSchema>;
+
+export const KingCheckedSchema = z.object({
+    isInCheck: z.literal(true),
+    coords: CoordsSchema,
+});
+
+export const KingNotCheckedSchema = z.object({
+    isInCheck: z.literal(false),
+});
+
+export const CheckStateSchema = z.discriminatedUnion("isInCheck", [KingCheckedSchema, KingNotCheckedSchema]);
+export type CheckState = z.infer<typeof CheckStateSchema>;
+
+export const MoveListSchema = z.array(z.tuple([z.string(), z.string().optional()]));
+export type MoveList = z.infer<typeof MoveListSchema>;
+
+export const GameStateSchema = z.object({
+    lastMove: LastMoveSchema.optional(),
+    checkState: CheckStateSchema,
+    board: z.array(z.array(z.union([z.nativeEnum(Fen), z.null()]))),
+});
+export type GameState = z.infer<typeof GameStateSchema>;
+
+export const GameHistorySchema = z.array(GameStateSchema);
+export type GameHistory = z.infer<typeof GameHistorySchema>;
+
+export const SquareWithPieceSchema = z.object({
+    piece: z.nativeEnum(Fen),
+    coords: CoordsSchema,
+});
+
+export const SquareWithoutPieceSchema = z.object({
+    piece: z.null(),
+});
+
+export const SelectedSquareSchema = z.discriminatedUnion("piece", [SquareWithPieceSchema, SquareWithoutPieceSchema]);
+export type SelectedSquare = z.infer<typeof SelectedSquareSchema>;
+
+export const ScoreSchema = z.object({
+    from: CoordsSchema,
+    to: CoordsSchema,
+    score: z.number(),
+    promotionPiece: z.nativeEnum(Fen).optional().nullable(),
+});
+export type Score = z.infer<typeof ScoreSchema>;
+
+export const GameOverSchema = z.object({
+    isGameOver: z.literal(true),
+    winner: z.nativeEnum(Color).optional(),
+    reason: z.nativeEnum(GameOverReason),
+});
+export type GameOver = z.infer<typeof GameOverSchema>;

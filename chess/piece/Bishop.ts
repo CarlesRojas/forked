@@ -1,5 +1,5 @@
 import { Piece } from "@/chess/piece/Piece";
-import { Base, Color, Coords, Fen, Material } from "@/chess/type";
+import { Base, Color, Coords, Fen, Material, PieceType } from "@/chess/type";
 
 export class Bishop extends Piece {
     protected override _fen: Fen;
@@ -23,16 +23,7 @@ export class Bishop extends Piece {
         return new Bishop(this.color, this.material, this.base);
     }
 
-    public override serialize(): string {
-        return JSON.stringify({
-            fen: this.fen,
-            material: this.material,
-            base: this.base,
-        });
-    }
-
-    public override deserialize(serialized: string): Piece {
-        const { fen, material, base } = JSON.parse(serialized);
-        return new Bishop(fen === Fen.WHITE_BISHOP ? Color.WHITE : Color.BLACK, material, base);
+    public override toType(): PieceType {
+        return { fen: this.fen, material: this.material, base: this.base };
     }
 }
