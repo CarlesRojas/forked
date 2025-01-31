@@ -32,16 +32,24 @@ const Piece = ({ fen, coords, onPieceClicked }: Props) => {
 
     if (!fen) return <div className="h-full w-full" onClick={() => onPieceClicked(coords)} />;
 
+    if (!playerPieces.includes(fen))
+        return (
+            <div className="relative flex size-full items-center justify-center" onClick={() => onPieceClicked(coords)}>
+                <img
+                    className="pointer-events-none h-[70%] w-[70%] select-none"
+                    src={PieceImage[fen]}
+                    alt={`${fen} piece`}
+                />
+            </div>
+        );
+
     return (
         <div
             ref={setNodeRef}
             style={style}
             {...listeners}
             {...attributes}
-            className={cn(
-                "group relative flex size-full items-center justify-center",
-                !playerPieces.includes(fen) && "pointer-events-none",
-            )}
+            className="group relative flex size-full items-center justify-center"
             onClick={() => onPieceClicked(coords)}
         >
             <img
