@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@variant mouse (@media (hover: hover));
-
 @layer base {
     * {
         @apply m-0 box-border p-0;

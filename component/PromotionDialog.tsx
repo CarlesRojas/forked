@@ -25,7 +25,7 @@ const PromotionDialog = ({ getPromotionOptions, onPromote, isPromotionActive }: 
                 {promotionOptions.map((fen) => (
                     <div
                         key={`promotion-${fen}`}
-                        className="mouse:hover:scale-110 flex aspect-square h-full cursor-pointer items-center justify-center transition-transform"
+                        className="flex aspect-square h-full cursor-pointer items-center justify-center transition-transform hover:scale-110"
                         onClick={() => onPromote(fen)}
                     >
                         <div className="pointer-events-none relative flex size-full items-center justify-center">
