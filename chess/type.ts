@@ -94,7 +94,7 @@ export const LastMoveTypeSchema = z.object({
     prevY: z.number(),
     currX: z.number(),
     currY: z.number(),
-    moveType: z.set(z.nativeEnum(MoveType)),
+    moveType: z.array(z.nativeEnum(MoveType)),
 });
 export type LastMoveType = z.infer<typeof LastMoveTypeSchema>;
 

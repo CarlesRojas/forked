@@ -13,7 +13,7 @@ import { savedChessboardAtom } from "@/state/game";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor } from "@dnd-kit/core";
 import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers";
 import { useAtom } from "jotai";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const Board = () => {
     const [savedChessBoard, setSavedChessBoard] = useAtom(savedChessboardAtom);
@@ -28,10 +28,9 @@ const Board = () => {
     const [isPromotionActive, setIsPromotionActive] = useState<boolean>(false);
     const [promotionCoords, setPromotionCoords] = useState<Coords | null>(null);
 
-    const { evaluate, bestMove, mateIn, evaluation } = useStockfish();
+    const { evaluate, bestMove, mateIn, evaluation, isReady } = useStockfish();
 
-    const [isEngineTurn, setIsEngineTurn] = useState<boolean>(false);
-
+    const [isEngineTurn, setIsEngineTurn] = useState<boolean>(chessBoard.playerColor === Color.BLACK);
     const [draggedPiece, setDraggedPiece] = useState<{ fen: Fen; coords: Coords } | null>(null);
 
     const getPromotionOptions = () => {
@@ -148,13 +147,6 @@ const Board = () => {
         updateBoard(prevCoords, promotionCoords, piece);
     };
 
-    useEffect(() => {
-        if (bestMove && isEngineTurn) {
-            const { from, to, promotion } = bestMove;
-            updateBoard(from, to, promotion);
-        }
-    }, [bestMove, isEngineTurn, updateBoard]);
-
     const pointerSensor = useSensor(PointerSensor, {
         activationConstraint: { distance: 10 },
     });
@@ -184,6 +176,20 @@ const Board = () => {
             selectPiece(fromCoords);
         }
     };
+
+    useEffect(() => {
+        if (bestMove && isEngineTurn) {
+            const { from, to, promotion } = bestMove;
+            updateBoard(from, to, promotion);
+        }
+    }, [bestMove, isEngineTurn, updateBoard]);
+
+    const firstEvaluationDone = useRef(false);
+    useEffect(() => {
+        if (!isReady || firstEvaluationDone.current) return;
+        evaluate({ fen: chessBoard.boardAsFEN, isGameOver: chessBoard.isGameOver, turn: chessBoard.playerColor });
+        firstEvaluationDone.current = true;
+    }, [chessBoard, evaluate, isReady]);
 
     return (
         <main className="relative flex h-full w-full gap-6">

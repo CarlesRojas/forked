@@ -55,6 +55,7 @@ export class ChessBoard {
             ? {
                   ...savedGame.lastMove,
                   piece: instantiatePiece(savedGame.lastMove.piece),
+                  moveType: new Set(savedGame.lastMove.moveType),
               }
             : undefined;
         this._checkState = savedGame.checkState;
@@ -72,6 +73,7 @@ export class ChessBoard {
                 ? {
                       ...gameState.lastMove,
                       piece: instantiatePiece(gameState.lastMove.piece),
+                      moveType: new Set(gameState.lastMove.moveType),
                   }
                 : undefined,
         }));
@@ -622,6 +624,7 @@ export class ChessBoard {
                 ? {
                       ...this._lastMove,
                       piece: this._lastMove.piece.toType(),
+                      moveType: Array.from(this._lastMove.moveType),
                   }
                 : null,
             checkState: this._checkState,
@@ -636,7 +639,11 @@ export class ChessBoard {
             gameHistory: this._gameHistory.map((gameState) => ({
                 ...gameState,
                 lastMove: gameState.lastMove
-                    ? { ...gameState.lastMove, piece: gameState.lastMove.piece.toType() }
+                    ? {
+                          ...gameState.lastMove,
+                          piece: gameState.lastMove.piece.toType(),
+                          moveType: Array.from(gameState.lastMove.moveType),
+                      }
                     : undefined,
             })),
         };

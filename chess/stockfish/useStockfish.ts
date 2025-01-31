@@ -57,5 +57,5 @@ export const useStockfish = () => {
         }, MAX_ENGINE_THINK_TIME);
     };
 
-    return { evaluate, evaluation, depth, bestLine, mateIn, bestMove };
+    return { evaluate, evaluation, depth, bestLine, mateIn, bestMove, isReady };
 };
