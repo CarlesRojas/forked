@@ -1,12 +1,12 @@
-import { COLUMNS, DEFAULT_SAVED_GAME } from "@/chess/const";
-import { FenConverter } from "@/chess/FenConverter";
-import { Bishop } from "@/chess/piece/Bishop";
-import { King } from "@/chess/piece/King";
-import { Knight } from "@/chess/piece/Knight";
-import { Pawn } from "@/chess/piece/Pawn";
-import { Piece } from "@/chess/piece/Piece";
-import { Queen } from "@/chess/piece/Queen";
-import { Rook } from "@/chess/piece/Rook";
+import { COLUMNS, DEFAULT_CHESS_BOARD } from "@/game/chess/const";
+import { FenConverter } from "@/game/chess/FenConverter";
+import { Bishop } from "@/game/chess/piece/Bishop";
+import { King } from "@/game/chess/piece/King";
+import { Knight } from "@/game/chess/piece/Knight";
+import { Pawn } from "@/game/chess/piece/Pawn";
+import { Piece } from "@/game/chess/piece/Piece";
+import { Queen } from "@/game/chess/piece/Queen";
+import { Rook } from "@/game/chess/piece/Rook";
 import {
     Base,
     CheckState,
@@ -22,9 +22,8 @@ import {
     MoveType,
     PieceType,
     SafeSquares,
-    SavedGame,
-    SavedGameSchema,
-} from "@/chess/type";
+    SavedChessBoardSchema,
+} from "@/game/chess/type";
 
 export class ChessBoard {
     private _chessBoard: (Piece | null)[][];
@@ -48,7 +47,7 @@ export class ChessBoard {
     private _moveList: MoveList = [];
     private _gameHistory: GameHistory;
 
-    constructor(savedGame: SavedGame = DEFAULT_SAVED_GAME) {
+    constructor(savedGame: SavedChessBoardSchema = DEFAULT_CHESS_BOARD) {
         this._chessBoard = savedGame.board.map((row) => row.map((piece) => (piece ? instantiatePiece(piece) : null)));
         this._playerColor = savedGame.playerColor;
         this._lastMove = savedGame.lastMove
@@ -617,7 +616,7 @@ export class ChessBoard {
     }
 
     public serialize(): string {
-        const object: SavedGame = {
+        const object: SavedChessBoardSchema = {
             board: this._chessBoard.map((row) => row.map((piece) => (piece ? piece.toType() : null))),
             playerColor: this._playerColor,
             lastMove: this._lastMove
@@ -653,10 +652,9 @@ export class ChessBoard {
 
     public static deserialize(serialized: string): ChessBoard {
         const rawObject = JSON.parse(serialized);
-        const savedGame = SavedGameSchema.safeParse(rawObject);
-        console.log(savedGame.error);
+        const savedGame = SavedChessBoardSchema.safeParse(rawObject);
 
-        if (!savedGame.success) return new ChessBoard(DEFAULT_SAVED_GAME);
+        if (!savedGame.success) return new ChessBoard();
 
         return new ChessBoard(savedGame.data);
     }

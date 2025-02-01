@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Coords, Fen, PieceImage } from "@/chess/type";
+import { Coords, Fen, PieceImage } from "@/game/chess/type";
 import { cn } from "@/lib/cn";
 import { useDraggable } from "@dnd-kit/core";
 

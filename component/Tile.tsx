@@ -1,5 +1,5 @@
-import { COLUMNS, ROWS } from "@/chess/const";
-import { Coords } from "@/chess/type";
+import { COLUMNS, ROWS } from "@/game/chess/const";
+import { Coords } from "@/game/chess/type";
 import { cn } from "@/lib/cn";
 import { useDroppable } from "@dnd-kit/core";
 

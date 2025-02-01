@@ -1,13 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { ChessBoard } from "@/chess/ChessBoard";
-import { useStockfish } from "@/chess/stockfish/useStockfish";
-import { CheckState, Color, Coords, Fen, LastMove, PieceImage, SelectedSquare } from "@/chess/type";
 import EvaluationBar from "@/component/EvaluationBar";
 import Piece from "@/component/Piece";
 import PromotionDialog from "@/component/PromotionDialog";
 import Tile from "@/component/Tile";
+import { ChessBoard } from "@/game/chess/ChessBoard";
+import { useStockfish } from "@/game/chess/stockfish/useStockfish";
+import { CheckState, Color, Coords, Fen, LastMove, PieceImage, SelectedSquare } from "@/game/chess/type";
 import { cn } from "@/lib/cn";
 import { savedChessboardAtom } from "@/state/game";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor } from "@dnd-kit/core";

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 
-import { MAX_ENGINE_THINK_TIME } from "@/chess/const";
-import StockfishEngine, { EngineMateIn, EngineMove } from "@/chess/stockfish/StockfishEngine";
-import { Color } from "@/chess/type";
+import { MAX_ENGINE_THINK_TIME } from "@/game/chess/const";
+import StockfishEngine, { EngineMateIn, EngineMove } from "@/game/chess/stockfish/StockfishEngine";
+import { Color } from "@/game/chess/type";
 import { useMemo, useState } from "react";
 
 interface Props {

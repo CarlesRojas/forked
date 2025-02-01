@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Fen, PieceImage } from "@/chess/type";
+import { Fen, PieceImage } from "@/game/chess/type";
 import { useEffect, useState } from "react";
 
 interface Props {

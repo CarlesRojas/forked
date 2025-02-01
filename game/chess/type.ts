@@ -1,4 +1,4 @@
-import { Piece } from "@/chess/piece/Piece";
+import { Piece } from "@/game/chess/piece/Piece";
 import { z } from "zod";
 
 export enum Color {
@@ -168,7 +168,7 @@ export type GameOver = z.infer<typeof GameOverSchema>;
 export const BoardSchema = z.array(z.array(z.union([PieceTypeSchema, z.null()])));
 export type Board = z.infer<typeof BoardSchema>;
 
-export const SavedGameSchema = z.object({
+export const SavedChessBoardSchema = z.object({
     board: BoardSchema,
     playerColor: z.nativeEnum(Color),
     lastMove: LastMoveTypeSchema.nullable(),
@@ -183,4 +183,4 @@ export const SavedGameSchema = z.object({
     moveList: MoveListSchema,
     gameHistory: GameHistoryTypeSchema,
 });
-export type SavedGame = z.infer<typeof SavedGameSchema>;
+export type SavedChessBoardSchema = z.infer<typeof SavedChessBoardSchema>;

@@ -1,6 +1,6 @@
-import { EVAL_BAR_LIMIT } from "@/chess/const";
-import { EngineMateIn } from "@/chess/stockfish/StockfishEngine";
-import { Color, GameOver } from "@/chess/type";
+import { EVAL_BAR_LIMIT } from "@/game/chess/const";
+import { EngineMateIn } from "@/game/chess/stockfish/StockfishEngine";
+import { Color, GameOver } from "@/game/chess/type";
 import { cn } from "@/lib/cn";
 
 interface EvaluationBarProps {

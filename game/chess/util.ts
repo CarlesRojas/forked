@@ -1,5 +1,5 @@
-import { ChessBoard } from "@/chess/ChessBoard";
-import { Color, Fen } from "@/chess/type";
+import { ChessBoard } from "@/game/chess/ChessBoard";
+import { Color, Fen } from "@/game/chess/type";
 
 export const printBoard = (chessBoard: ChessBoard): void => {
     const unicodePieces: Record<Fen, string> = {

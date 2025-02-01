@@ -1,4 +1,4 @@
-import { Base, Color, Coords, Fen, Material, PieceType } from "@/chess/type";
+import { Base, Color, Coords, Fen, Material, PieceType } from "@/game/chess/type";
 
 export abstract class Piece {
     protected abstract _fen: Fen;

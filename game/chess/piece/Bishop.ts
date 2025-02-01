@@ -1,5 +1,5 @@
-import { Piece } from "@/chess/piece/Piece";
-import { Base, Color, Coords, Fen, Material, PieceType } from "@/chess/type";
+import { Piece } from "@/game/chess/piece/Piece";
+import { Base, Color, Coords, Fen, Material, PieceType } from "@/game/chess/type";
 
 export class Bishop extends Piece {
     protected override _fen: Fen;

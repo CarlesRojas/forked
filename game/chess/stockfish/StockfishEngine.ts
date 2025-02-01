@@ -1,5 +1,5 @@
-import { COLUMNS, ROWS } from "@/chess/const";
-import { Color, Coords, Fen } from "@/chess/type";
+import { COLUMNS, ROWS } from "@/game/chess/const";
+import { Color, Coords, Fen } from "@/game/chess/type";
 
 const stockfish = new Worker("/engine/stockfish.wasm.js");
 

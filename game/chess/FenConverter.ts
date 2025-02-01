@@ -1,9 +1,9 @@
-import { COLUMNS } from "@/chess/const";
-import { King } from "@/chess/piece/King";
-import { Pawn } from "@/chess/piece/Pawn";
-import { Piece } from "@/chess/piece/Piece";
-import { Rook } from "@/chess/piece/Rook";
-import { Color, LastMove } from "@/chess/type";
+import { COLUMNS } from "@/game/chess/const";
+import { King } from "@/game/chess/piece/King";
+import { Pawn } from "@/game/chess/piece/Pawn";
+import { Piece } from "@/game/chess/piece/Piece";
+import { Rook } from "@/game/chess/piece/Rook";
+import { Color, LastMove } from "@/game/chess/type";
 
 export class FenConverter {
     public static readonly initalPosition: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
