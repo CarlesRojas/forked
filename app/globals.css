@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant portrait (@media (orientation: portrait));
+
 @layer base {
     * {
         @apply m-0 box-border p-0;

@@ -11,5 +11,7 @@ export const en: LanguageObject = {
     mainMenu: {
         title: "Forked",
         play: "Play",
+        continue: "Continue",
+        newGame: "New Game",
     },
 };

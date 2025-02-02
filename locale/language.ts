@@ -15,6 +15,8 @@ export const LanguageObjectSchema = z.object({
     mainMenu: z.object({
         title: z.string(),
         play: z.string(),
+        continue: z.string(),
+        newGame: z.string(),
     }),
 });
 
