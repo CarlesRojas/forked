@@ -26,7 +26,7 @@ export const createNewMatch = () => {
         currentRound: 0,
         rounds: [
             {
-                tournament: Tournament.INTERNATIONAL_INVITATIONAL,
+                tournament: Tournament.SCHOOL_CHESS_CLUB,
                 stage: Stage.QUARTER_FINALS,
                 targetScore: 500,
                 currentScore: 0,
