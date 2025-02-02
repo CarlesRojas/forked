@@ -4,6 +4,7 @@ import { PageProps } from "@/app/[language]/layout";
 import Board from "@/component/Board";
 import EvaluationBar from "@/component/EvaluationBar";
 import GameStatus from "@/component/GameStatus";
+import { AspectRatio } from "@/component/ui/aspect-ratio";
 import { ChessBoard } from "@/game/chess/ChessBoard";
 import { useStockfish } from "@/game/chess/stockfish/useStockfish";
 import { currentMatchAtom, savedChessboardAtom } from "@/state/game";
@@ -36,15 +37,13 @@ const Game = ({ params }: PageProps) => {
 
             <div className="relative h-full w-full portrait:h-0 portrait:min-h-full">
                 <div
-                    className="relative aspect-square max-h-full bg-red-500 portrait:h-full portrait:max-h-[unset] portrait:max-w-full"
+                    className="relative aspect-square max-h-full portrait:h-full portrait:max-h-[unset] portrait:max-w-full"
                     ref={chessBoardRef}
                 >
-                    <Board chessBoard={chessBoard} evaluation={{ evaluate, bestMove, isReady }} />
-                </div>
-                {/* <div className="relative aspect-square max-h-full" ref={chessBoardRef}>
                     <AspectRatio ratio={1}>
+                        <Board chessBoard={chessBoard} evaluation={{ evaluate, bestMove, isReady }} />
                     </AspectRatio>
-                </div> */}
+                </div>
             </div>
 
             <div className="relative size-full" style={isPortrait ? {} : { maxHeight: chessBoardSize.height }}>
