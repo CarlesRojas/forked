@@ -23,9 +23,10 @@ export const createNewMatch = () => {
         },
         maxMoves: 10,
         consumables: [],
+        currentRound: 0,
         rounds: [
             {
-                tournament: Tournament.SCHOOL_CHESS_CLUB,
+                tournament: Tournament.INTERNATIONAL_INVITATIONAL,
                 stage: Stage.QUARTER_FINALS,
                 targetScore: 500,
                 currentScore: 0,

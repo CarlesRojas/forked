@@ -19,7 +19,7 @@ const EvaluationBar = ({ evaluation, mateIn, gameOver }: EvaluationBarProps) => 
     return (
         <div className="bg-white-piece relative h-full w-8">
             <div
-                className={cn("bg-black-piece absolute top-0 left-0 w-full transition-all duration-1000")}
+                className={cn("bg-trout-950 absolute top-0 left-0 w-full transition-all duration-1000")}
                 style={{ height: `${percentage}%` }}
             />
 

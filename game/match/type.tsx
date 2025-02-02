@@ -8,13 +8,13 @@ export const exhaustiveRecord = <T extends { [k: string]: string | number }>(enu
 
 export enum Tournament {
     SCHOOL_CHESS_CLUB = "SCHOOL_CHESS_CLUB",
-    LOCAL_CLUB_TOURNAMENT = "LOCAL_CLUB_TOURNAMENT",
+    LOCAL_TOURNAMENT = "LOCAL_TOURNAMENT",
     REGIONAL_CHAMPIONSHIP = "REGIONAL_CHAMPIONSHIP",
     NATIONAL_OPEN = "NATIONAL_OPEN",
     INTERNATIONAL_INVITATIONAL = "INTERNATIONAL_INVITATIONAL",
     GRAND_PRIX_SERIES = "GRAND_PRIX_SERIES",
     CANDIDATES_TOURNAMENT = "CANDIDATES_TOURNAMENT",
-    WORLD_CHAMPIONSHIP = "WORLD_CHAMPIONSHIP",
+    WORLD_CHAMPIONSHIP = "WORLD_CHAMPIOSHIP",
     CHALLENGER = "CHALLENGER",
 }
 
@@ -103,6 +103,7 @@ export const MatchSchema = z.object({
     moveLevels: exhaustiveRecord(MoveUpgrade, z.number()),
     maxMoves: z.number(),
     consumables: z.array(z.nativeEnum(Tarot)),
+    currentRound: z.number().default(0),
     rounds: z.array(RoundSchema),
     pieces: z.array(PieceTypeSchema),
     // TODO mods: z.array(z.nativeEnum(Mod)),

@@ -1,11 +1,14 @@
 "use client";
 
+import { PageProps } from "@/app/[language]/layout";
 import EvaluationBar from "@/component/EvaluationBar";
 import GameStatus from "@/component/GameStatus";
 import { currentMatchAtom } from "@/state/game";
 import { useAtomValue } from "jotai";
+import { use } from "react";
 
-const Game = () => {
+const Game = ({ params }: PageProps) => {
+    const { language } = use(params);
     const match = useAtomValue(currentMatchAtom);
 
     if (!match) return;
@@ -19,7 +22,7 @@ const Game = () => {
             <div className="relative size-full bg-green-500/30" />
 
             <div className="relative size-full">
-                <GameStatus match={match} />
+                <GameStatus match={match} language={language} />
             </div>
         </div>
     );
