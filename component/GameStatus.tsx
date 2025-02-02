@@ -22,33 +22,35 @@ const GameStatus = ({ match, language }: Props) => {
     const { width: modifierSlotWidth } = useResizeObserver({ ref: modifierSlotRef, box: "border-box" });
 
     return (
-        <div className="flex h-full w-fit min-w-96 flex-col justify-between gap-4 portrait:w-full portrait:min-w-[unset] portrait:md:grid portrait:md:h-fit portrait:md:grid-cols-2">
-            <div className="flex flex-col gap-4">
-                <div className="bg-trout-950 flex flex-col gap-4 p-4">
+        <div className="flex h-full w-fit max-w-[30vw] flex-col justify-between gap-2 sm:min-w-96 lg:gap-4 portrait:w-full portrait:min-w-full portrait:md:grid portrait:md:h-fit portrait:md:grid-cols-2">
+            <div className="flex flex-col gap-2 lg:gap-4">
+                <div className="bg-trout-950 flex flex-col gap-2 p-2 lg:gap-4 lg:p-4">
                     <div className="flex flex-col">
-                        <div className="flex items-baseline justify-between gap-4">
-                            <h2 className="text-2xl leading-7 text-orange-400 capitalize">
+                        <div className="flex items-baseline justify-between gap-2 lg:gap-4">
+                            <h2 className="text-lg leading-4 text-orange-400 capitalize lg:text-2xl lg:leading-7">
                                 {t.enum.tournament[tournament]}
                             </h2>
 
-                            <span className="opacity-60">
+                            <span className="lg:text-md text-sm opacity-60">
                                 {currentRound + 1}/{rounds.length}{" "}
                             </span>
                         </div>
 
                         <div className="leading-5 lowercase">
-                            <span className="opacity-60">{t.enum.stage[stage]} </span>
-                            <span className="text-amber-400">
+                            <span className="lg:text-md text-sm opacity-60">{t.enum.stage[stage]} </span>
+                            <span className="lg:text-md text-sm text-amber-400">
                                 {t.game.status.price.replace("{{REWARD}}", reward.toLocaleString(language))}
                             </span>
                         </div>
                     </div>
 
                     <div>
-                        <div className="opacity-60">{t.game.status.scoreAtLeast}</div>
+                        <div className="lg:text-md text-sm opacity-60">{t.game.status.scoreAtLeast}</div>
 
-                        <div className="bg-trout-800 relative w-full px-2 py-1">
-                            <p className="text-3xl text-orange-400">{targetScore.toLocaleString(language)}</p>
+                        <div className="bg-trout-800 relative w-full px-2 lg:py-1">
+                            <p className="text-lg text-orange-400 lg:text-3xl">
+                                {targetScore.toLocaleString(language)}
+                            </p>
 
                             <div
                                 className="absolute top-0 left-0 h-full bg-orange-700/20"
@@ -60,21 +62,25 @@ const GameStatus = ({ match, language }: Props) => {
                     </div>
                 </div>
 
-                <div className="bg-trout-950 flex items-center gap-4 p-4">
+                <div className="bg-trout-950 flex items-center gap-2 p-2 lg:gap-4 lg:p-4">
                     <div className="flex w-fit flex-col">
-                        <p className="leading-5 opacity-60">{t.game.status.roundScore.split(" ")[0]}</p>
-                        <p className="leading-5 opacity-60">{t.game.status.roundScore.split(" ")[1]}</p>
+                        <p className="lg:text-md text-sm leading-3.5 opacity-60 lg:leading-5">
+                            {t.game.status.roundScore.split(" ")[0]}
+                        </p>
+                        <p className="lg:text-md text-sm leading-3.5 opacity-60 lg:leading-5">
+                            {t.game.status.roundScore.split(" ")[1]}
+                        </p>
                     </div>
 
-                    <div className="bg-trout-800 relative flex w-full items-center justify-center px-2 py-1">
-                        <p className="text-3xl">{targetScore.toLocaleString(language)}</p>
+                    <div className="bg-trout-800 relative flex w-full items-center justify-center px-2 lg:py-1">
+                        <p className="text-lg lg:text-3xl">{targetScore.toLocaleString(language)}</p>
                     </div>
                 </div>
 
-                <div className="bg-trout-950 flex flex-col items-center justify-center gap-4 p-4">
-                    <div className="flex w-fit flex-col gap-1">
+                <div className="bg-trout-950 flex flex-col items-center justify-center gap-2 p-2 lg:gap-4 lg:p-4">
+                    <div className="flex w-fit flex-col lg:gap-1">
                         {/* TODO get piece being moved and move or last one if scoring */}
-                        <span className="w-fit text-2xl leading-5 text-white">
+                        <span className="w-fit text-lg leading-5 text-white lg:text-2xl">
                             {t.enum.pieceUpgrade[PieceUpgrade.PAWN]} {t.enum.moveUpgrade[MoveUpgrade.MOVE]}
                         </span>
 
@@ -85,38 +91,42 @@ const GameStatus = ({ match, language }: Props) => {
                     </div>
 
                     <div className="grid w-full grid-cols-[minmax(0,1fr)_min-content_minmax(0,1fr)] gap-2">
-                        <div className="w-full bg-blue-400/50 px-2 py-1">
-                            <p className="w-full text-right text-3xl">50</p>
+                        <div className="h-fit w-full bg-blue-400/50 px-2 lg:py-1">
+                            <p className="w-full text-right text-lg lg:text-3xl">50</p>
                         </div>
 
                         <div className="flex h-full items-center justify-center">
-                            <span className="text-4xl">×</span>
+                            <span className="text-4xl leading-4">×</span>
                         </div>
 
-                        <div className="w-full bg-orange-400/50 px-2 py-1">
-                            <p className="w-full text-left text-3xl">4</p>
+                        <div className="h-fit w-full bg-orange-400/50 px-2 lg:py-1">
+                            <p className="w-full text-left text-lg lg:text-3xl">4</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-trout-950 flex h-fit w-full flex-col items-center justify-center gap-2 p-4">
-                <div className="flex w-full justify-between gap-4">
-                    <div className="flex gap-6">
+            <div className="bg-trout-950 flex h-fit w-full items-end justify-center gap-3 p-2 lg:flex-col lg:items-center lg:p-4">
+                <div className="flex w-fit items-end justify-between gap-3 lg:w-full lg:items-start">
+                    <div className="flex flex-col gap-1 lg:flex-row lg:gap-6">
                         <div className="flex flex-col">
-                            <p className="opacity-60">{t.game.status.funds}</p>
-                            <p className="text-3xl text-amber-400">{`$${money.toLocaleString(language)}`}</p>
+                            <p className="lg:text-md text-sm leading-5 opacity-60 lg:leading-8">
+                                {t.game.status.funds}
+                            </p>
+                            <p className="text-lg leading-4 text-amber-400 lg:text-3xl">{`$${money.toLocaleString(language)}`}</p>
                         </div>
 
                         <div className="flex flex-col">
-                            <p className="opacity-60">{t.game.status.moves}</p>
-                            <p className="text-3xl">{maxMoves - movesMade}</p>
+                            <p className="lg:text-md text-sm leading-5 opacity-60 lg:leading-8">
+                                {t.game.status.moves}
+                            </p>
+                            <p className="text-lg leading-4 lg:text-3xl">{maxMoves - movesMade}</p>
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
-                        <div className="opacity-60">{t.game.status.consumables}</div>
-                        <div className="grid grid-cols-2 gap-2">
+                    <div className="flex min-w-fit flex-col gap-1.5">
+                        <div className="lg:text-md text-sm opacity-60">{t.game.status.consumables}</div>
+                        <div className="grid w-fit grid-cols-2 gap-1 lg:gap-2">
                             <div
                                 className="bg-trout-800 aspect-square size-full"
                                 style={{ width: modifierSlotWidth }}
@@ -131,9 +141,9 @@ const GameStatus = ({ match, language }: Props) => {
                 </div>
 
                 <div className="flex w-full flex-col gap-1.5">
-                    <div className="opacity-60">{t.game.status.modifiers}</div>
+                    <div className="lg:text-md text-sm opacity-60">{t.game.status.modifiers}</div>
 
-                    <div className="grid w-full grid-cols-5 gap-2">
+                    <div className="grid w-full grid-cols-5 gap-1 lg:gap-2">
                         <div className="bg-trout-800 aspect-square size-full" ref={modifierSlotRef}></div>
                         <div className="bg-trout-800 aspect-square size-full"></div>
                         <div className="bg-trout-800 aspect-square size-full"></div>

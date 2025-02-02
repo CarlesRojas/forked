@@ -27,7 +27,7 @@ const Game = ({ params }: PageProps) => {
     if (!match) return;
 
     return (
-        <div className="relative grid h-full max-h-full w-full grid-cols-[auto_1fr_auto] grid-rows-1 gap-6 p-6 portrait:grid-cols-1 portrait:grid-rows-[auto_1fr_auto]">
+        <div className="relative grid h-full max-h-full w-full grid-cols-[auto_1fr_auto] grid-rows-1 gap-3 p-3 lg:gap-6 lg:p-6 portrait:grid-cols-1 portrait:grid-rows-[auto_1fr_auto]">
             <div
                 className="relative size-full"
                 style={{ maxHeight: chessBoardSize.height, maxWidth: chessBoardSize.width }}
