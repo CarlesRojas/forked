@@ -5,7 +5,7 @@ import StockfishEngine, { EngineMateIn, EngineMove } from "@/game/chess/stockfis
 import { Color } from "@/game/chess/type";
 import { useMemo, useState } from "react";
 
-interface Props {
+export interface EvaluateProps {
     fen: string;
     isGameOver: boolean;
     turn: Color;
@@ -31,7 +31,7 @@ export const useStockfish = () => {
         };
     }, [engine]);
 
-    const evaluate = ({ fen, isGameOver, turn }: Props) => {
+    const evaluate = ({ fen, isGameOver, turn }: EvaluateProps) => {
         if (!isReady || isGameOver) return;
 
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
