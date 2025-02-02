@@ -16,7 +16,7 @@ const GameStatus = ({ match, language }: Props) => {
     const { tournament, stage, targetScore, currentScore, movesMade, reward } = currentRoundData;
 
     return (
-        <div className="flex h-full w-fit min-w-96 flex-col justify-between">
+        <div className="flex h-full w-fit min-w-96 flex-col justify-between gap-4 portrait:w-full portrait:min-w-[unset] portrait:md:grid portrait:md:h-fit portrait:md:grid-cols-2">
             <div className="flex flex-col gap-4">
                 <div className="bg-trout-950 flex flex-col gap-4 p-4">
                     <div className="flex flex-col">
@@ -94,7 +94,7 @@ const GameStatus = ({ match, language }: Props) => {
                 </div>
             </div>
 
-            <div className="bg-trout-950 flex w-full flex-col items-center justify-center gap-2 p-4">
+            <div className="bg-trout-950 flex h-fit w-full flex-col items-center justify-center gap-2 p-4">
                 <div className="flex w-full justify-between gap-4">
                     <div className="flex gap-6">
                         <div className="flex flex-col">
@@ -111,21 +111,22 @@ const GameStatus = ({ match, language }: Props) => {
                     <div className="flex flex-col gap-1.5">
                         <div className="opacity-60">{t.game.status.consumables}</div>
                         <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-trout-800 h-20 w-20"></div>
-                            <div className="bg-trout-800 h-20 w-20"></div>
+                            <div className="bg-trout-800 aspect-square size-full"></div>
+                            <div className="bg-trout-800 aspect-square size-full"></div>
+                            {/* TODO make this same side as modifiers */}
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-1.5">
+                <div className="flex w-full flex-col gap-1.5">
                     <div className="opacity-60">{t.game.status.modifiers}</div>
 
-                    <div className="grid min-w-fit grid-cols-[repeat(5,5rem)] gap-2">
-                        <div className="bg-trout-800 h-20 w-20"></div>
-                        <div className="bg-trout-800 h-20 w-20"></div>
-                        <div className="bg-trout-800 h-20 w-20"></div>
-                        <div className="bg-trout-800 h-20 w-20"></div>
-                        <div className="bg-trout-800 h-20 w-20"></div>
+                    <div className="grid w-full grid-cols-5 gap-2">
+                        <div className="bg-trout-800 aspect-square size-full"></div>
+                        <div className="bg-trout-800 aspect-square size-full"></div>
+                        <div className="bg-trout-800 aspect-square size-full"></div>
+                        <div className="bg-trout-800 aspect-square size-full"></div>
+                        <div className="bg-trout-800 aspect-square size-full"></div>
                     </div>
                 </div>
             </div>
