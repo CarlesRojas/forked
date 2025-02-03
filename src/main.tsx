@@ -1,10 +1,15 @@
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { RouterProvider, createMemoryHistory, createRouter } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
+
+const memoryHistory = createMemoryHistory({
+    initialEntries: ["/"],
+});
 
 const router = createRouter({
     routeTree,
     defaultPreload: "intent",
+    history: memoryHistory,
 });
 
 declare module "@tanstack/react-router" {

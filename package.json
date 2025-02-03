@@ -76,6 +76,15 @@
             "dist/**/*",
             "electron/**/*",
             "public/**/*"
-        ]
+        ],
+        "directories": {
+            "output": "release"
+        },
+        "protocols": {
+            "name": "forked-protocol",
+            "schemes": [
+                "forked"
+            ]
+        }
     }
 }
