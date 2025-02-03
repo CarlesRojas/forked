@@ -7,6 +7,19 @@
         @apply m-0 box-border p-0;
     }
 
+    html {
+        @apply bg-trout-800 h-dvh max-h-dvh min-h-dvh w-dvw max-w-dvw min-w-dvw touch-none overflow-hidden text-white select-none;
+    }
+
+    body {
+        @apply relative size-full overflow-hidden;
+        font-family: "Kode Mono Variable", monospace;
+    }
+
+    #app {
+        @apply relative flex size-full items-center justify-center overflow-hidden;
+    }
+
     img,
     video,
     svg {

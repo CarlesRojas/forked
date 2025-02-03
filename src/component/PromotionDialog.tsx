@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { Fen, PieceImage } from "@/game/chess/type";
 import { useEffect, useState } from "react";
 
@@ -21,7 +20,7 @@ const PromotionDialog = ({ getPromotionOptions, onPromote, isPromotionActive }: 
         <>
             <div className="pointer-events-all fixed inset-0 z-40 bg-black/50"></div>
 
-            <div className="absolute top-0 bottom-0 left-full z-50 grid grid-cols-1 grid-rows-8 bg-red-200/40">
+            <div className="absolute bottom-0 left-full top-0 z-50 grid grid-cols-1 grid-rows-8 bg-red-200/40">
                 {promotionOptions.map((fen) => (
                     <div
                         key={`promotion-${fen}`}

@@ -48,7 +48,7 @@ const Tile = ({
             style={{ gridColumnStart: coords.y + 1, gridRowStart: 8 - coords.x }}
         >
             {isSquareCaptureForSelectedPiece(coords) ? (
-                <div className="pointer-events-none flex size-full items-center justify-center rounded-full bg-black/15 select-none">
+                <div className="pointer-events-none flex size-full select-none items-center justify-center rounded-full bg-black/15">
                     <div
                         className={cn(
                             "size-5/6 rounded-full",
@@ -60,13 +60,13 @@ const Tile = ({
                 </div>
             ) : (
                 isSquareMoveForSelectedPiece(coords) && (
-                    <div className="pointer-events-none size-1/4 rounded-full bg-black/15 select-none" />
+                    <div className="pointer-events-none size-1/4 select-none rounded-full bg-black/15" />
                 )
             )}
 
             <svg
                 viewBox="0 0 100 100"
-                className="pointer-events-none absolute right-0 -bottom-[2%] size-1/5 select-none"
+                className="pointer-events-none absolute -bottom-[2%] right-0 size-1/5 select-none"
             >
                 <text
                     x="50%"

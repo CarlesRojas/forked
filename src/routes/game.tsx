@@ -1,19 +1,17 @@
-"use client";
-
-import { PageProps } from "@/app/[language]/layout";
 import Board from "@/component/Board";
 import EvaluationBar from "@/component/EvaluationBar";
 import GameStatus from "@/component/GameStatus";
 import { AspectRatio } from "@/component/ui/aspect-ratio";
 import { ChessBoard } from "@/game/chess/ChessBoard";
 import { useStockfish } from "@/game/chess/stockfish/useStockfish";
+import { Language } from "@/locale/language";
 import { currentMatchAtom, savedChessboardAtom } from "@/state/game";
+import { createFileRoute } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
-import { use, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useMediaQuery, useResizeObserver } from "usehooks-ts";
 
-const Game = ({ params }: PageProps) => {
-    const { language } = use(params);
+const Game = () => {
     const match = useAtomValue(currentMatchAtom);
     const savedChessBoard = useAtomValue(savedChessboardAtom);
     const [chessBoard] = useState(() => (savedChessBoard ? ChessBoard.deserialize(savedChessBoard) : new ChessBoard()));
@@ -27,7 +25,7 @@ const Game = ({ params }: PageProps) => {
     if (!match) return;
 
     return (
-        <div className="relative grid h-full max-h-full w-full grid-cols-[auto_1fr_auto] grid-rows-1 gap-3 p-3 lg:gap-6 lg:p-6 portrait:grid-cols-1 portrait:grid-rows-[auto_1fr_auto]">
+        <div className="relative grid h-fit max-h-full w-full grid-cols-[auto_1fr_auto] grid-rows-1 gap-3 p-3 lg:gap-6 lg:p-6 portrait:h-full portrait:grid-cols-1 portrait:grid-rows-[auto_1fr_auto]">
             <div
                 className="relative size-full"
                 style={{ maxHeight: chessBoardSize.height, maxWidth: chessBoardSize.width }}
@@ -46,11 +44,16 @@ const Game = ({ params }: PageProps) => {
                 </div>
             </div>
 
-            <div className="relative size-full" style={isPortrait ? {} : { maxHeight: chessBoardSize.height }}>
-                <GameStatus match={match} language={language} />
+            <div
+                className="relative size-full"
+                style={isPortrait ? { maxWidth: chessBoardSize.width } : { maxHeight: chessBoardSize.height }}
+            >
+                <GameStatus match={match} language={Language.EN} />
             </div>
         </div>
     );
 };
 
-export default Game;
+export const Route = createFileRoute("/game")({
+    component: Game,
+});

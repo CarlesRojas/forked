@@ -1,6 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-"use client";
-
 import Piece from "@/component/Piece";
 import PromotionDialog from "@/component/PromotionDialog";
 import Tile from "@/component/Tile";
@@ -225,7 +222,7 @@ const Board = ({ chessBoard, evaluation }: Props) => {
                     )}
                 </div>
 
-                <div className="absolute inset-0 z-10 grid grid-cols-8 grid-rows-8 select-none">
+                <div className="absolute inset-0 z-10 grid select-none grid-cols-8 grid-rows-8">
                     {chessBoardView
                         .map((row, x) =>
                             row.map((fen, y) => (

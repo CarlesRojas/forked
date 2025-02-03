@@ -27,7 +27,7 @@ const GameStatus = ({ match, language }: Props) => {
                 <div className="bg-trout-950 flex flex-col gap-2 p-2 lg:gap-4 lg:p-4">
                     <div className="flex flex-col">
                         <div className="flex items-baseline justify-between gap-2 lg:gap-4">
-                            <h2 className="text-lg leading-4 text-orange-400 capitalize lg:text-2xl lg:leading-7">
+                            <h2 className="text-lg capitalize leading-4 text-orange-400 lg:text-2xl lg:leading-7">
                                 {t.enum.tournament[tournament]}
                             </h2>
 
@@ -36,7 +36,7 @@ const GameStatus = ({ match, language }: Props) => {
                             </span>
                         </div>
 
-                        <div className="leading-5 lowercase">
+                        <div className="lowercase leading-5">
                             <span className="lg:text-md text-sm opacity-60">{t.enum.stage[stage]} </span>
                             <span className="lg:text-md text-sm text-amber-400">
                                 {t.game.status.price.replace("{{REWARD}}", reward.toLocaleString(language))}
@@ -53,7 +53,7 @@ const GameStatus = ({ match, language }: Props) => {
                             </p>
 
                             <div
-                                className="absolute top-0 left-0 h-full bg-orange-700/20"
+                                className="absolute left-0 top-0 h-full bg-orange-700/20"
                                 style={{
                                     width: `${(currentScore / targetScore) * 100}%`,
                                 }}
@@ -64,10 +64,10 @@ const GameStatus = ({ match, language }: Props) => {
 
                 <div className="bg-trout-950 flex items-center gap-2 p-2 lg:gap-4 lg:p-4">
                     <div className="flex w-fit flex-col">
-                        <p className="lg:text-md text-sm leading-3.5 opacity-60 lg:leading-5">
+                        <p className="lg:text-md leading-3.5 text-sm opacity-60 lg:leading-5">
                             {t.game.status.roundScore.split(" ")[0]}
                         </p>
-                        <p className="lg:text-md text-sm leading-3.5 opacity-60 lg:leading-5">
+                        <p className="lg:text-md leading-3.5 text-sm opacity-60 lg:leading-5">
                             {t.game.status.roundScore.split(" ")[1]}
                         </p>
                     </div>

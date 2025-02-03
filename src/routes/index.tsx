@@ -1,19 +1,14 @@
-"use client";
-
-import { PageProps } from "@/app/[language]/layout";
 import { Button } from "@/component/ui/button";
 import { ChessBoard } from "@/game/chess/ChessBoard";
 import { createNewMatch } from "@/game/match/util";
 import { getTranslation } from "@/locale/getTranslation";
+import { Language } from "@/locale/language";
 import { currentMatchAtom, savedChessboardAtom } from "@/state/game";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useAtom, useSetAtom } from "jotai";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { use } from "react";
 
-const MainMenu = ({ params }: PageProps) => {
-    const { language } = use(params);
-    const t = getTranslation(language);
+const MainMenu = () => {
+    const t = getTranslation(Language.EN);
     const router = useRouter();
 
     const [currentMatch, setCurrentMatch] = useAtom(currentMatchAtom);
@@ -22,7 +17,7 @@ const MainMenu = ({ params }: PageProps) => {
     const handleNewGame = () => {
         setCurrentMatch(createNewMatch());
         setSavedChessBoard(new ChessBoard().serialize());
-        router.push("/game");
+        router.navigate({ to: "/game" });
     };
 
     return (
@@ -34,7 +29,7 @@ const MainMenu = ({ params }: PageProps) => {
 
                 {currentMatch && (
                     <Button asChild variant="secondary">
-                        <Link href={"/game"}>{t.mainMenu.continue}</Link>
+                        <Link to={"/game"}>{t.mainMenu.continue}</Link>
                     </Button>
                 )}
             </div>
@@ -42,4 +37,6 @@ const MainMenu = ({ params }: PageProps) => {
     );
 };
 
-export default MainMenu;
+export const Route = createFileRoute("/")({
+    component: MainMenu,
+});
