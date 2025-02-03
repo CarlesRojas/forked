@@ -23,7 +23,7 @@ const EvaluationBar = ({ evaluation, mateIn, gameOver }: EvaluationBarProps) => 
         <div className="bg-white-piece relative h-full w-8 portrait:h-8 portrait:w-full">
             <div
                 className={cn(
-                    "bg-trout-950 absolute left-0 top-0 transition-all duration-1000 portrait:left-[unset] portrait:right-0",
+                    "bg-trout-950 absolute top-0 left-0 transition-all duration-1000 portrait:right-0 portrait:left-[unset]",
                 )}
                 style={
                     isPortrait
@@ -35,8 +35,8 @@ const EvaluationBar = ({ evaluation, mateIn, gameOver }: EvaluationBarProps) => 
             {!gameOver && (
                 <p
                     className={cn(
-                        "absolute left-1/2 h-fit -translate-x-1/2 text-xs portrait:left-[unset] portrait:top-1/2 portrait:-translate-y-1/2 portrait:translate-x-0",
-                        !mateIn && evaluation < 0 && "top-0.5 text-white portrait:right-2 portrait:top-1/2",
+                        "absolute left-1/2 h-fit -translate-x-1/2 text-xs portrait:top-1/2 portrait:left-[unset] portrait:-translate-y-1/2 portrait:translate-x-0",
+                        !mateIn && evaluation < 0 && "top-0.5 text-white portrait:top-1/2 portrait:right-2",
                         !mateIn &&
                             evaluation >= 0 &&
                             "bottom-0.5 font-semibold text-black portrait:bottom-[unset] portrait:left-2",
@@ -45,7 +45,7 @@ const EvaluationBar = ({ evaluation, mateIn, gameOver }: EvaluationBarProps) => 
                             "bottom-0.5 font-semibold text-black portrait:bottom-[unset] portrait:left-2",
                         mateIn &&
                             mateIn.color === Color.BLACK &&
-                            "top-0.5 text-white portrait:right-2 portrait:top-1/2",
+                            "top-0.5 text-white portrait:top-1/2 portrait:right-2",
                     )}
                 >
                     {mateIn ? `M${mateIn.moves}` : Math.abs(evaluation).toFixed(1)}

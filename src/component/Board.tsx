@@ -222,7 +222,7 @@ const Board = ({ chessBoard, evaluation }: Props) => {
                     )}
                 </div>
 
-                <div className="absolute inset-0 z-10 grid select-none grid-cols-8 grid-rows-8">
+                <div className="absolute inset-0 z-10 grid grid-cols-8 grid-rows-8 select-none">
                     {chessBoardView
                         .map((row, x) =>
                             row.map((fen, y) => (

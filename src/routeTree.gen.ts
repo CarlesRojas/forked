@@ -10,123 +10,121 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as ShopImport } from './routes/shop'
-import { Route as LevelImport } from './routes/level'
-import { Route as GameImport } from './routes/game'
-import { Route as IndexImport } from './routes/index'
+import { Route as rootRoute } from "./routes/__root";
+import { Route as ShopImport } from "./routes/shop";
+import { Route as LevelImport } from "./routes/level";
+import { Route as GameImport } from "./routes/game";
+import { Route as IndexImport } from "./routes/index";
 
 // Create/Update Routes
 
 const ShopRoute = ShopImport.update({
-  id: '/shop',
-  path: '/shop',
-  getParentRoute: () => rootRoute,
-} as any)
+    id: "/shop",
+    path: "/shop",
+    getParentRoute: () => rootRoute,
+} as any);
 
 const LevelRoute = LevelImport.update({
-  id: '/level',
-  path: '/level',
-  getParentRoute: () => rootRoute,
-} as any)
+    id: "/level",
+    path: "/level",
+    getParentRoute: () => rootRoute,
+} as any);
 
 const GameRoute = GameImport.update({
-  id: '/game',
-  path: '/game',
-  getParentRoute: () => rootRoute,
-} as any)
+    id: "/game",
+    path: "/game",
+    getParentRoute: () => rootRoute,
+} as any);
 
 const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
+    id: "/",
+    path: "/",
+    getParentRoute: () => rootRoute,
+} as any);
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
+declare module "@tanstack/react-router" {
+    interface FileRoutesByPath {
+        "/": {
+            id: "/";
+            path: "/";
+            fullPath: "/";
+            preLoaderRoute: typeof IndexImport;
+            parentRoute: typeof rootRoute;
+        };
+        "/game": {
+            id: "/game";
+            path: "/game";
+            fullPath: "/game";
+            preLoaderRoute: typeof GameImport;
+            parentRoute: typeof rootRoute;
+        };
+        "/level": {
+            id: "/level";
+            path: "/level";
+            fullPath: "/level";
+            preLoaderRoute: typeof LevelImport;
+            parentRoute: typeof rootRoute;
+        };
+        "/shop": {
+            id: "/shop";
+            path: "/shop";
+            fullPath: "/shop";
+            preLoaderRoute: typeof ShopImport;
+            parentRoute: typeof rootRoute;
+        };
     }
-    '/game': {
-      id: '/game'
-      path: '/game'
-      fullPath: '/game'
-      preLoaderRoute: typeof GameImport
-      parentRoute: typeof rootRoute
-    }
-    '/level': {
-      id: '/level'
-      path: '/level'
-      fullPath: '/level'
-      preLoaderRoute: typeof LevelImport
-      parentRoute: typeof rootRoute
-    }
-    '/shop': {
-      id: '/shop'
-      path: '/shop'
-      fullPath: '/shop'
-      preLoaderRoute: typeof ShopImport
-      parentRoute: typeof rootRoute
-    }
-  }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/game': typeof GameRoute
-  '/level': typeof LevelRoute
-  '/shop': typeof ShopRoute
+    "/": typeof IndexRoute;
+    "/game": typeof GameRoute;
+    "/level": typeof LevelRoute;
+    "/shop": typeof ShopRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/game': typeof GameRoute
-  '/level': typeof LevelRoute
-  '/shop': typeof ShopRoute
+    "/": typeof IndexRoute;
+    "/game": typeof GameRoute;
+    "/level": typeof LevelRoute;
+    "/shop": typeof ShopRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/game': typeof GameRoute
-  '/level': typeof LevelRoute
-  '/shop': typeof ShopRoute
+    __root__: typeof rootRoute;
+    "/": typeof IndexRoute;
+    "/game": typeof GameRoute;
+    "/level": typeof LevelRoute;
+    "/shop": typeof ShopRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/game' | '/level' | '/shop'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/game' | '/level' | '/shop'
-  id: '__root__' | '/' | '/game' | '/level' | '/shop'
-  fileRoutesById: FileRoutesById
+    fileRoutesByFullPath: FileRoutesByFullPath;
+    fullPaths: "/" | "/game" | "/level" | "/shop";
+    fileRoutesByTo: FileRoutesByTo;
+    to: "/" | "/game" | "/level" | "/shop";
+    id: "__root__" | "/" | "/game" | "/level" | "/shop";
+    fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  GameRoute: typeof GameRoute
-  LevelRoute: typeof LevelRoute
-  ShopRoute: typeof ShopRoute
+    IndexRoute: typeof IndexRoute;
+    GameRoute: typeof GameRoute;
+    LevelRoute: typeof LevelRoute;
+    ShopRoute: typeof ShopRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  GameRoute: GameRoute,
-  LevelRoute: LevelRoute,
-  ShopRoute: ShopRoute,
-}
+    IndexRoute: IndexRoute,
+    GameRoute: GameRoute,
+    LevelRoute: LevelRoute,
+    ShopRoute: ShopRoute,
+};
 
-export const routeTree = rootRoute
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
