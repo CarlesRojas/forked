@@ -58,3 +58,5 @@ yarn-error.log*
 
 # electron
 electron/*.cjs
+electron/*.mjs
+electron/*.js

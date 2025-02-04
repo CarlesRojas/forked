@@ -10,7 +10,7 @@
     "license": "MIT",
     "title": "Forked",
     "description": "Chess rogue like",
-    "main": "electron/electron.cjs",
+    "exports": "./electron/electron.mjs",
     "scripts": {
         "dev": "vite --port=3000",
         "build": "bun el:type && tsc --noEmit && prettier --write '**/*.{ts,tsx}' && vite build",
@@ -19,9 +19,8 @@
         "el:type": "tsc electron/*.ts && mv electron/electron.js electron/electron.cjs && mv electron/preload.js electron/preload.cjs",
         "el:pack": "electron-builder --dir",
         "el:dev": "concurrently -k \"cross-env BROWSER=none bun dev\" \"bun el\"",
-        "el:builder": "electron-builder",
         "el:build": "bun el:type && tsc --noEmit && cross-env ELECTRON=true vite build",
-        "app:build": "bun el:build && bun el:builder"
+        "app:build": "bun el:build && bun electron-builder"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
@@ -85,6 +84,12 @@
             "schemes": [
                 "forked"
             ]
+        },
+        "win": {
+            "target": [
+                "nsis"
+            ],
+            "artifactName": "${productName}-Setup-${version}.${ext}"
         }
     }
 }
