@@ -9,7 +9,7 @@ const isDev = process.env.IS_DEV == "true" ? true : false;
 //  #################################################
 
 const settingsPath = path.join(app.getPath("userData"), "settings.json");
-interface Settings {
+export interface Settings {
     windowMode: WindowMode;
     showFrame: boolean;
 }
@@ -60,7 +60,7 @@ const createWindow = () => {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
-            preload: path.join(__dirname, "preload.mjs"),
+            preload: path.join(__dirname, "preload.cjs"),
         },
     });
 
@@ -71,7 +71,7 @@ const createWindow = () => {
 
     window.loadURL(isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../dist/index.html")}`);
 
-    // if (isDev) window.webContents.openDevTools();
+    if (isDev) window.webContents.openDevTools();
     setWindowMode(settings.windowMode);
 };
 
@@ -98,7 +98,7 @@ app.on("window-all-closed", () => {
 //  #################################################
 
 const setWindowMode = (mode: WindowMode) => {
-    const needsRestart = (settings.showFrame && mode === "borderless") || (!settings.showFrame && mode === "windowed");
+    const needsRestart = (settings.showFrame && mode === "borderless") || (!settings.showFrame && mode === "windowed"); // BUG Windowed -> Fullscreen -> Borderless shows frame
     settings.showFrame = mode === "windowed";
     settings.windowMode = mode;
 
@@ -134,6 +134,10 @@ const setWindowMode = (mode: WindowMode) => {
     }
 };
 
+ipcMain.handle("getSettings", async () => {
+    console.log(settings);
+    return settings;
+});
 ipcMain.handle("setFullscreenMode", async () => setWindowMode("fullscreen"));
 ipcMain.handle("setWindowedMode", async () => setWindowMode("windowed"));
 ipcMain.handle("setBorderlessMode", async () => setWindowMode("borderless"));
