@@ -98,8 +98,8 @@ app.on("window-all-closed", () => {
 //  #################################################
 
 const setWindowMode = (mode: WindowMode) => {
-    const needsRestart = (settings.showFrame && mode === "borderless") || (!settings.showFrame && mode === "windowed"); // BUG Windowed -> Fullscreen -> Borderless shows frame
-    settings.showFrame = mode === "windowed";
+    const needsRestart = (settings.showFrame && mode === "borderless") || (!settings.showFrame && mode === "windowed");
+    if (mode !== "fullscreen") settings.showFrame = mode === "windowed";
     settings.windowMode = mode;
 
     console.log(needsRestart);
