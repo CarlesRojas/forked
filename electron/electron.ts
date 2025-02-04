@@ -2,17 +2,18 @@ import { app, BrowserWindow, ipcMain, Menu, shell } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 
-let window: BrowserWindow;
 const isDev = process.env.IS_DEV == "true" ? true : false;
 
-// Add settings file path and type definition
+//  #################################################
+//   SETTINGS
+//  #################################################
+
 const settingsPath = path.join(app.getPath("userData"), "settings.json");
 interface Settings {
     windowMode: WindowMode;
     showFrame: boolean;
 }
 
-// Initialize settings with defaults
 let settings: Settings = {
     windowMode: "fullscreen" as WindowMode,
     showFrame: true,
@@ -40,35 +41,28 @@ const saveSettings = () => {
     }
 };
 
-const getLastWindowMode = () => {
-    return settings.windowMode;
-};
 
-const getShowFrame = () => {
-    return settings.showFrame;
-};
+//  #################################################
+//   WINDOW
+//  #################################################
 
+let window: BrowserWindow;
 const initialSize = { width: 1024, height: 650 };
 
 const createWindow = () => {
-    const lastMode = getLastWindowMode();
     Menu.setApplicationMenu(null);
 
     window = new BrowserWindow({
         ...initialSize,
         autoHideMenuBar: false,
-        fullscreen: lastMode === "fullscreen",
-        resizable: lastMode === "windowed",
-        frame: getShowFrame(),
+        fullscreen: settings.windowMode === "fullscreen",
+        resizable: settings.windowMode === "windowed",
+        frame: settings.showFrame,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
             preload: path.join(__dirname, "preload.mjs"),
         },
-    });
-
-    window.on("closed", () => {
-        window = null as any;
     });
 
     window.webContents.setWindowOpenHandler((event) => {
@@ -79,20 +73,22 @@ const createWindow = () => {
     window.loadURL(isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../dist/index.html")}`);
 
     // if (isDev) window.webContents.openDevTools();
-    setWindowMode(lastMode);
+    setWindowMode(settings.windowMode);
 };
 
 const setWindowMode = (mode: WindowMode) => {
+    console.log("CHANGE TO ", mode)
     if (!window || !["windowed", "borderless", "fullscreen"].includes(mode)) return;
 
-    const currentShowFrame = getShowFrame();
-    const needsRestart = (currentShowFrame && mode === "borderless") || (!currentShowFrame && mode === "windowed");
+    const needsRestart = (settings.showFrame && mode === "borderless") || (!settings.showFrame && mode === "windowed");
 
     settings.showFrame = mode === "windowed";
     settings.windowMode = mode;
 
     saveSettings();
 
+    console.log(needsRestart)
+    console.log(settings)
     if (needsRestart) {
         app.relaunch();
         app.exit();
@@ -118,7 +114,9 @@ const setWindowMode = (mode: WindowMode) => {
     }
 };
 
-ipcMain.handle("set-window-mode", async (_, mode: WindowMode) => setWindowMode(mode));
+//  #################################################
+//   MAIN
+//  #################################################
 
 app.whenReady().then(() => {
     loadSettings();
@@ -130,5 +128,13 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
+    window = null as any;
     if (process.platform !== "darwin") app.quit();
 });
+
+
+//  #################################################
+//   GAME INTERFACE
+//  #################################################
+
+ipcMain.handle("set-window-mode", async (_, mode: WindowMode) => setWindowMode(mode));

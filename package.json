@@ -10,13 +10,13 @@
     "license": "MIT",
     "title": "Forked",
     "description": "Chess rogue like",
-    "exports": "./electron/electron.mjs",
+    "main": "electron/electron.cjs",
     "scripts": {
         "dev": "vite --port=3000",
         "build": "bun el:type && tsc --noEmit && prettier --write '**/*.{ts,tsx}' && vite build",
         "serve": "vite preview",
         "el": "bun el:type && wait-on tcp:3000 && cross-env IS_DEV=true electron .",
-        "el:type": "tsc electron/*.ts && mv electron/electron.js electron/electron.cjs && mv electron/preload.js electron/preload.cjs",
+        "el:type": "tsc electron/*.ts && tsx electron/rename-files.ts",
         "el:pack": "electron-builder --dir",
         "el:dev": "concurrently -k \"cross-env BROWSER=none bun dev\" \"bun el\"",
         "el:build": "bun el:type && tsc --noEmit && cross-env ELECTRON=true vite build",
@@ -58,7 +58,8 @@
         "renamer": "^5.0.2",
         "typescript": "^5.7.3",
         "vite": "^6.0.3",
-        "wait-on": "^8.0.2"
+        "wait-on": "^8.0.2",
+        "tsx": "^4.7.1"
     },
     "build": {
         "appId": "com.pinya.forked",
