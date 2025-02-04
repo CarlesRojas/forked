@@ -51,6 +51,7 @@ const createWindow = () => {
         fullscreen: settings.windowMode === "fullscreen",
         resizable: true,
         frame: true,
+        icon: path.join(__dirname, isDev ? "../public/icon.png" : "./icon.png"),
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
