@@ -1,7 +1,9 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("electronAPI", {
-    setWindowMode: (mode: "windowed" | "borderless" | "fullscreen") => ipcRenderer.invoke("set-window-mode", mode),
+    setFullscreenMode: () => ipcRenderer.invoke("setFullscreenMode"),
+    setWindowedMode: () => ipcRenderer.invoke("setWindowedMode"),
+    setBorderlessMode: () => ipcRenderer.invoke("setBorderlessMode"),
 });
 
 window.addEventListener("DOMContentLoaded", () => {

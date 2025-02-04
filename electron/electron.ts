@@ -41,7 +41,6 @@ const saveSettings = () => {
     }
 };
 
-
 //  #################################################
 //   WINDOW
 //  #################################################
@@ -76,19 +75,40 @@ const createWindow = () => {
     setWindowMode(settings.windowMode);
 };
 
+//  #################################################
+//   MAIN
+//  #################################################
+
+app.whenReady().then(() => {
+    loadSettings();
+    createWindow();
+
+    app.on("activate", () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+});
+
+app.on("window-all-closed", () => {
+    window = null as any;
+    if (process.platform !== "darwin") app.quit();
+});
+
+//  #################################################
+//   INTERFACE
+//  #################################################
+
 const setWindowMode = (mode: WindowMode) => {
-    console.log("CHANGE TO ", mode)
-    if (!window || !["windowed", "borderless", "fullscreen"].includes(mode)) return;
-
     const needsRestart = (settings.showFrame && mode === "borderless") || (!settings.showFrame && mode === "windowed");
-
     settings.showFrame = mode === "windowed";
     settings.windowMode = mode;
 
+    console.log(needsRestart);
+    console.log(settings);
+
+    if (!window) return;
+
     saveSettings();
 
-    console.log(needsRestart)
-    console.log(settings)
     if (needsRestart) {
         app.relaunch();
         app.exit();
@@ -114,27 +134,6 @@ const setWindowMode = (mode: WindowMode) => {
     }
 };
 
-//  #################################################
-//   MAIN
-//  #################################################
-
-app.whenReady().then(() => {
-    loadSettings();
-    createWindow();
-
-    app.on("activate", () => {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    });
-});
-
-app.on("window-all-closed", () => {
-    window = null as any;
-    if (process.platform !== "darwin") app.quit();
-});
-
-
-//  #################################################
-//   GAME INTERFACE
-//  #################################################
-
-ipcMain.handle("set-window-mode", async (_, mode: WindowMode) => setWindowMode(mode));
+ipcMain.handle("setFullscreenMode", async () => setWindowMode("fullscreen"));
+ipcMain.handle("setWindowedMode", async () => setWindowMode("windowed"));
+ipcMain.handle("setBorderlessMode", async () => setWindowMode("borderless"));

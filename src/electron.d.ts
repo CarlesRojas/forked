@@ -1,5 +1,7 @@
 interface ElectronAPI {
-    setWindowMode: (mode: "windowed" | "borderless" | "fullscreen") => Promise<void>;
+    setFullscreenMode: () => Promise<void>;
+    setWindowedMode: () => Promise<void>;
+    setBorderlessMode: () => Promise<void>;
 }
 
 declare global {
