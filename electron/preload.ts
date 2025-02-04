@@ -4,7 +4,6 @@ contextBridge.exposeInMainWorld("electron", {
     getSettings: () => ipcRenderer.invoke("getSettings"),
     setFullscreenMode: () => ipcRenderer.invoke("setFullscreenMode"),
     setWindowedMode: () => ipcRenderer.invoke("setWindowedMode"),
-    setBorderlessMode: () => ipcRenderer.invoke("setBorderlessMode"),
 });
 
 window.addEventListener("DOMContentLoaded", () => {

@@ -1,12 +1,15 @@
+export type WindowMode = "windowed" | "fullscreen";
+
+export interface Settings {
+    windowMode: WindowMode;
+}
+
 declare global {
     interface Window {
         electron: {
             setFullscreenMode: () => Promise<void>;
             setWindowedMode: () => Promise<void>;
-            setBorderlessMode: () => Promise<void>;
-            getSettings: () => Promise<{
-                mode: "windowed" | "borderless" | "fullscreen";
-            }>;
+            getSettings: () => Promise<Settings>;
         };
     }
 }

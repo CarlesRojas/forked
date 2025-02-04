@@ -1,6 +1,7 @@
-import { app, BrowserWindow, ipcMain, Menu, screen, shell } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, shell } from "electron";
 import * as fs from "fs";
 import * as path from "path";
+import { Settings, WindowMode } from "../src/electron.d";
 
 const isDev = process.env.IS_DEV == "true" ? true : false;
 
@@ -9,17 +10,10 @@ const isDev = process.env.IS_DEV == "true" ? true : false;
 //  #################################################
 
 const settingsPath = path.join(app.getPath("userData"), "settings.json");
-export interface Settings {
-    windowMode: WindowMode;
-    showFrame: boolean;
-}
 
 let settings: Settings = {
-    windowMode: "fullscreen" as WindowMode,
-    showFrame: true,
+    windowMode: "fullscreen",
 };
-
-type WindowMode = "windowed" | "borderless" | "fullscreen";
 
 const loadSettings = () => {
     try {
@@ -55,8 +49,8 @@ const createWindow = () => {
         ...initialSize,
         autoHideMenuBar: false,
         fullscreen: settings.windowMode === "fullscreen",
-        resizable: settings.windowMode === "windowed",
-        frame: settings.showFrame,
+        resizable: true,
+        frame: true,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
@@ -71,7 +65,7 @@ const createWindow = () => {
 
     window.loadURL(isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../dist/index.html")}`);
 
-    if (isDev) window.webContents.openDevTools();
+    // if (isDev) window.webContents.openDevTools();
     setWindowMode(settings.windowMode);
 };
 
@@ -98,38 +92,14 @@ app.on("window-all-closed", () => {
 //  #################################################
 
 const setWindowMode = (mode: WindowMode) => {
-    const needsRestart = (settings.showFrame && mode === "borderless") || (!settings.showFrame && mode === "windowed");
-    if (mode !== "fullscreen") settings.showFrame = mode === "windowed";
-    settings.windowMode = mode;
-
-    console.log(needsRestart);
-    console.log(settings);
-
     if (!window) return;
-
+    settings.windowMode = mode;
     saveSettings();
-
-    if (needsRestart) {
-        app.relaunch();
-        app.exit();
-        return;
-    }
 
     switch (mode) {
         case "windowed":
             window.setFullScreen(false);
-            window.setResizable(true);
             window.setSize(initialSize.width, initialSize.height);
-            break;
-
-        case "borderless":
-            window.setFullScreen(false);
-            const windowBounds = window.getBounds();
-            const currentDisplay = screen.getDisplayNearestPoint({ x: windowBounds.x, y: windowBounds.y });
-            const { width, height, x, y } = currentDisplay.bounds;
-            window.setSize(width, height);
-            window.setPosition(x, y);
-            window.setResizable(false);
             break;
 
         case "fullscreen":
@@ -138,10 +108,6 @@ const setWindowMode = (mode: WindowMode) => {
     }
 };
 
-ipcMain.handle("getSettings", async () => {
-    console.log(settings);
-    return settings;
-});
+ipcMain.handle("getSettings", async () => settings);
 ipcMain.handle("setFullscreenMode", async () => setWindowMode("fullscreen"));
 ipcMain.handle("setWindowedMode", async () => setWindowMode("windowed"));
-ipcMain.handle("setBorderlessMode", async () => setWindowMode("borderless"));

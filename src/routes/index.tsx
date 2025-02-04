@@ -38,7 +38,6 @@ const MainMenu = () => {
                 <h2 className="text-xl font-semibold">Display Mode</h2>
                 <div className="flex gap-4">
                     <Button onClick={async () => await window.electron.setWindowedMode()}>Windowed</Button>
-                    <Button onClick={async () => await window.electron.setBorderlessMode()}>Borderless</Button>
                     <Button onClick={async () => await window.electron.setFullscreenMode()}>Fullscreen</Button>
                     <Button onClick={async () => console.log(await window.electron.getSettings())}>Get Settings</Button>
                 </div>
