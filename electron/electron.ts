@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, shell } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, screen, shell } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -119,12 +119,16 @@ const setWindowMode = (mode: WindowMode) => {
         case "windowed":
             window.setFullScreen(false);
             window.setResizable(true);
-            window.setSize(initialSize.width, initialSize.height); // TODO save last size and position
+            window.setSize(initialSize.width, initialSize.height);
             break;
 
         case "borderless":
             window.setFullScreen(false);
-            window.maximize();
+            const windowBounds = window.getBounds();
+            const currentDisplay = screen.getDisplayNearestPoint({ x: windowBounds.x, y: windowBounds.y });
+            const { width, height, x, y } = currentDisplay.bounds;
+            window.setSize(width, height);
+            window.setPosition(x, y);
             window.setResizable(false);
             break;
 
