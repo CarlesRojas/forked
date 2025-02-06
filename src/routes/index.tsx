@@ -1,7 +1,7 @@
 import { Button } from "@/component/ui/button";
 import { ChessBoard } from "@/game/chess/ChessBoard";
 import { createNewMatch } from "@/game/match/util";
-import { electron } from "@/lib/electronInterface";
+import { electron, ElectronMethod } from "@/lib/electronInterface";
 import { getTranslation } from "@/locale/getTranslation";
 import { Language } from "@/locale/language";
 import { currentMatchAtom, savedChessboardAtom } from "@/state/game";
@@ -21,7 +21,7 @@ const MainMenu = async () => {
         router.navigate({ to: "/game" });
     };
 
-    const isSteamEnabled = await electron("IS_STEAM_ENABLED");
+    const isSteamEnabled = await electron(ElectronMethod.IS_STEAM_ENABLED);
 
     return (
         <div className="relative flex h-full w-full flex-col items-center justify-center gap-8 p-6">
@@ -39,14 +39,20 @@ const MainMenu = async () => {
 
             <div className="flex flex-col gap-2">
                 <h2 className="text-xl font-semibold">Display Mode</h2>
-                <div className="flex gap-4">
-                    <Button onClick={async () => await electron("SET_WINDOWED_MODE")}>Windowed</Button>
-                    <Button onClick={async () => await electron("SET_FULLSCREEN_MODE")}>Fullscreen</Button>
-                    <Button onClick={async () => console.log(await electron("GET_SETTINGS"))}>Get Settings</Button>
-                    <Button onClick={async () => await electron("EXIT_GAME")}>Exit Game</Button>
+
+                <div className="flex flex-wrap gap-4">
+                    <Button onClick={async () => await electron(ElectronMethod.SET_WINDOWED_MODE)}>Windowed</Button>
+
+                    <Button onClick={async () => await electron(ElectronMethod.SET_FULLSCREEN_MODE)}>Fullscreen</Button>
+
+                    <Button onClick={async () => console.log(await electron(ElectronMethod.GET_SETTINGS))}>
+                        Get Settings
+                    </Button>
+
+                    <Button onClick={async () => await electron(ElectronMethod.EXIT_GAME)}>Exit Game</Button>
 
                     {isSteamEnabled && (
-                        <Button onClick={async () => console.log(await electron("GET_STEAM_NAME"))}>
+                        <Button onClick={async () => console.log(await electron(ElectronMethod.GET_STEAM_NAME))}>
                             Get Steam Name
                         </Button>
                     )}
