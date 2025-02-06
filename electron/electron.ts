@@ -54,7 +54,7 @@ const createWindow = () => {
         icon: path.join(__dirname, isDev ? "../public/icon.png" : "./icon.png"),
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: true,
+            contextIsolation: false,
             preload: path.join(__dirname, "preload.cjs"),
         },
     });
@@ -66,7 +66,7 @@ const createWindow = () => {
 
     window.loadURL(isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../dist/index.html")}`);
 
-    // if (isDev) window.webContents.openDevTools();
+    if (isDev) window.webContents.openDevTools();
     setWindowMode(settings.windowMode);
 };
 
@@ -83,10 +83,12 @@ app.whenReady().then(() => {
     });
 });
 
-app.on("window-all-closed", () => {
+const exitGame = () => {
     window = null as any;
     if (process.platform !== "darwin") app.quit();
-});
+};
+
+app.on("window-all-closed", () => exitGame());
 
 //  #################################################
 //   INTERFACE
@@ -109,6 +111,7 @@ const setWindowMode = (mode: WindowMode) => {
     }
 };
 
-ipcMain.handle("getSettings", async () => settings);
-ipcMain.handle("setFullscreenMode", async () => setWindowMode("fullscreen"));
-ipcMain.handle("setWindowedMode", async () => setWindowMode("windowed"));
+ipcMain.handle("GET_SETTINGS", () => settings);
+ipcMain.handle("SET_FULLSCREEN_MODE", () => setWindowMode("fullscreen"));
+ipcMain.handle("SET_WINDOWED_MODE", () => setWindowMode("windowed"));
+ipcMain.handle("EXIT_GAME", exitGame);

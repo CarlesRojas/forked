@@ -1,3 +1,5 @@
+import { IpcRenderer } from "electron";
+
 export type WindowMode = "windowed" | "fullscreen";
 
 export interface Settings {
@@ -6,11 +8,7 @@ export interface Settings {
 
 declare global {
     interface Window {
-        electron: {
-            setFullscreenMode: () => Promise<void>;
-            setWindowedMode: () => Promise<void>;
-            getSettings: () => Promise<Settings>;
-        };
+        electron: IpcRenderer;
     }
 }
 

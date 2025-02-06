@@ -1,10 +1,6 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { ipcRenderer } from "electron";
 
-contextBridge.exposeInMainWorld("electron", {
-    getSettings: () => ipcRenderer.invoke("getSettings"),
-    setFullscreenMode: () => ipcRenderer.invoke("setFullscreenMode"),
-    setWindowedMode: () => ipcRenderer.invoke("setWindowedMode"),
-});
+(window as any).electron = ipcRenderer;
 
 window.addEventListener("DOMContentLoaded", () => {
     const replaceText = (selector: string, text: string) => {

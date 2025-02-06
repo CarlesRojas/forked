@@ -1,6 +1,7 @@
 import { Button } from "@/component/ui/button";
 import { ChessBoard } from "@/game/chess/ChessBoard";
 import { createNewMatch } from "@/game/match/util";
+import { electron } from "@/lib/electronInterface";
 import { getTranslation } from "@/locale/getTranslation";
 import { Language } from "@/locale/language";
 import { currentMatchAtom, savedChessboardAtom } from "@/state/game";
@@ -37,9 +38,10 @@ const MainMenu = () => {
             <div className="flex flex-col gap-2">
                 <h2 className="text-xl font-semibold">Display Mode</h2>
                 <div className="flex gap-4">
-                    <Button onClick={async () => await window.electron.setWindowedMode()}>Windowed</Button>
-                    <Button onClick={async () => await window.electron.setFullscreenMode()}>Fullscreen</Button>
-                    <Button onClick={async () => console.log(await window.electron.getSettings())}>Get Settings</Button>
+                    <Button onClick={async () => await electron("SET_WINDOWED_MODE")}>Windowed</Button>
+                    <Button onClick={async () => await electron("SET_FULLSCREEN_MODE")}>Fullscreen</Button>
+                    <Button onClick={async () => console.log(await electron("GET_SETTINGS"))}>Get Settings</Button>
+                    <Button onClick={async () => await electron("EXIT_GAME")}>Exit Game</Button>
                 </div>
             </div>
         </div>

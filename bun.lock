@@ -20,6 +20,7 @@
         "motion": "^12.0.6",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
+        "steamworks.js": "^0.4.0",
         "tailwind-merge": "^2.6.0",
         "tailwindcss": "^4.0.3",
         "usehooks-ts": "^3.1.0",
@@ -1052,6 +1053,8 @@
     "ssri": ["ssri@9.0.1", "", { "dependencies": { "minipass": "^3.1.1" } }, "sha512-o57Wcn66jMQvfHG1FlYbWeZWW/dHZhJXjpIcTfXldXEk5nz5lStPo3mK0OJQfGR3RbZUlbISexbljkJzuEj/8Q=="],
 
     "stat-mode": ["stat-mode@1.0.0", "", {}, "sha512-jH9EhtKIjuXZ2cWxmXS8ZP80XyC3iasQxMDV8jzhNJpfDb7VbQLVW4Wvsxz9QZvzV+G4YoSfBUVKDOyxLzi/sg=="],
+
+    "steamworks.js": ["steamworks.js@0.4.0", "", { "dependencies": { "@types/node": "*" } }, "sha512-O5TTRs7ucCRql4IA/kYUIQYeghTsXqf3rAm81sC22RDId264LQYqQjuaMEUSqL60I5LdULiGu0W2/A+ZDcKBKA=="],
 
     "stream-read-all": ["stream-read-all@4.0.0", "", {}, "sha512-4MdJwfor9RkFCH1GCDCrEsLVqei+FrtogHtgyf2OdTlOq/+6+pW6FG1xzkdeK8/fd8/rGA7l3oJ1WolxNLX85w=="],
 
