@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu, shell } from "electron";
 import * as fs from "fs";
 import * as path from "path";
+import * as steamworks from "steamworks.js";
 import { Settings, WindowMode } from "../src/electron.d";
 
 const isDev = process.env.IS_DEV == "true" ? true : false;
@@ -39,6 +40,7 @@ const saveSettings = () => {
 //   WINDOW
 //  #################################################
 
+let steam: Omit<steamworks.Client, "init" | "runCallbacks">;
 let window: BrowserWindow;
 const initialSize = { width: 1024, height: 650 };
 
@@ -64,15 +66,26 @@ const createWindow = () => {
         return { action: "deny" };
     });
 
+    try {
+        steam = steamworks.init(123); // TODO add app id
+    } catch (error) {
+        console.error("Failed to initialize Steam:", error);
+    }
+
     window.loadURL(isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../dist/index.html")}`);
 
-    if (isDev) window.webContents.openDevTools();
+    // if (isDev) window.webContents.openDevTools();
     setWindowMode(settings.windowMode);
 };
 
 //  #################################################
 //   MAIN
 //  #################################################
+
+const exit = () => {
+    window = null as any;
+    if (process.platform !== "darwin") app.quit();
+};
 
 app.whenReady().then(() => {
     loadSettings();
@@ -83,12 +96,7 @@ app.whenReady().then(() => {
     });
 });
 
-const exitGame = () => {
-    window = null as any;
-    if (process.platform !== "darwin") app.quit();
-};
-
-app.on("window-all-closed", () => exitGame());
+app.on("window-all-closed", () => exit());
 
 //  #################################################
 //   INTERFACE
@@ -114,4 +122,13 @@ const setWindowMode = (mode: WindowMode) => {
 ipcMain.handle("GET_SETTINGS", () => settings);
 ipcMain.handle("SET_FULLSCREEN_MODE", () => setWindowMode("fullscreen"));
 ipcMain.handle("SET_WINDOWED_MODE", () => setWindowMode("windowed"));
-ipcMain.handle("EXIT_GAME", exitGame);
+ipcMain.handle("EXIT_GAME", exit);
+
+//  #################################################
+//   STEAM
+//  #################################################
+
+ipcMain.handle("IS_STEAM_ENABLED", () => !!steam);
+ipcMain.handle("GET_STEAM_NAME", () => steam && steam.localplayer.getName());
+
+steamworks.electronEnableSteamOverlay();

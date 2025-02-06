@@ -8,7 +8,7 @@ import { currentMatchAtom, savedChessboardAtom } from "@/state/game";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useAtom, useSetAtom } from "jotai";
 
-const MainMenu = () => {
+const MainMenu = async () => {
     const t = getTranslation(Language.EN);
     const router = useRouter();
 
@@ -20,6 +20,8 @@ const MainMenu = () => {
         setSavedChessBoard(new ChessBoard().serialize());
         router.navigate({ to: "/game" });
     };
+
+    const isSteamEnabled = await electron("IS_STEAM_ENABLED");
 
     return (
         <div className="relative flex h-full w-full flex-col items-center justify-center gap-8 p-6">
@@ -42,6 +44,12 @@ const MainMenu = () => {
                     <Button onClick={async () => await electron("SET_FULLSCREEN_MODE")}>Fullscreen</Button>
                     <Button onClick={async () => console.log(await electron("GET_SETTINGS"))}>Get Settings</Button>
                     <Button onClick={async () => await electron("EXIT_GAME")}>Exit Game</Button>
+
+                    {isSteamEnabled && (
+                        <Button onClick={async () => console.log(await electron("GET_STEAM_NAME"))}>
+                            Get Steam Name
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>
