@@ -127,7 +127,7 @@ const createWindow = () => {
     });
 
     try {
-        steam = steamworks.init(123); // TODO add app id
+        steam = steamworks.init(3519930);
     } catch (error) {
         console.error("Failed to initialize Steam:", error);
     }

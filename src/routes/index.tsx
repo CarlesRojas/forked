@@ -49,13 +49,13 @@ const MainMenu = async () => {
                         Get Settings
                     </Button>
 
-                    <Button onClick={async () => await electron(ElectronMethod.EXIT_GAME)}>Exit Game</Button>
-
                     {isSteamEnabled && (
                         <Button onClick={async () => console.log(await electron(ElectronMethod.GET_STEAM_NAME))}>
                             Get Steam Name
                         </Button>
                     )}
+
+                    <Button onClick={async () => await electron(ElectronMethod.EXIT_GAME)}>Exit Game</Button>
                 </div>
             </div>
         </div>
