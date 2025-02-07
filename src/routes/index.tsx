@@ -22,10 +22,13 @@ const MainMenu = async () => {
     };
 
     const isSteamEnabled = await electron(ElectronMethod.IS_STEAM_ENABLED);
+    const steamName = isSteamEnabled ? await electron(ElectronMethod.GET_STEAM_NAME) : "Player";
 
     return (
         <div className="relative flex h-full w-full flex-col items-center justify-center gap-8 p-6">
             <h1 className="text-6xl font-semibold">{t.mainMenu.title}</h1>
+
+            <p className="text-xl font-semibold">Hello, {steamName}!</p>
 
             <div className="flex gap-4">
                 <Button onClick={handleNewGame}>{currentMatch ? t.mainMenu.newGame : t.mainMenu.play}</Button>
@@ -48,12 +51,6 @@ const MainMenu = async () => {
                     <Button onClick={async () => console.log(await electron(ElectronMethod.GET_SETTINGS))}>
                         Get Settings
                     </Button>
-
-                    {isSteamEnabled && (
-                        <Button onClick={async () => console.log(await electron(ElectronMethod.GET_STEAM_NAME))}>
-                            Get Steam Name
-                        </Button>
-                    )}
 
                     <Button onClick={async () => await electron(ElectronMethod.EXIT_GAME)}>Exit Game</Button>
                 </div>
