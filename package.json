@@ -17,7 +17,6 @@
         "serve": "vite preview",
         "el": "bun el:type && wait-on tcp:3000 && cross-env IS_DEV=true electron .",
         "el:type": "tsc electron/*.ts && tsx electron/rename-files.ts",
-        "el:pack": "electron-builder --dir",
         "el:dev": "concurrently -k \"cross-env BROWSER=none bun dev\" \"bun el\"",
         "el:build": "bun el:type && tsc --noEmit && cross-env ELECTRON=true vite build",
         "app:build": "bun el:build && bun electron-builder"
@@ -66,40 +65,20 @@
         "appId": "com.pinya.forked",
         "productName": "Forked",
         "copyright": "Copyright © 2025 Carles Rojas",
-        "mac": {
-            "category": "public.app-category.games",
-            "icon": "public/icon.icns"
-        },
-        "nsis": {
-            "oneClick": true,
-            "allowToChangeInstallationDirectory": false
-        },
         "files": [
             "dist/**/*",
             "electron/**/*",
             "public/**/*"
         ],
         "directories": {
-            "output": "release"
-        },
-        "protocols": {
-            "name": "forked-protocol",
-            "schemes": [
-                "forked"
-            ]
+            "output": "release/${version}"
         },
         "win": {
             "target": [
                 "portable"
             ],
             "artifactName": "${productName}.${ext}",
-            "icon": "public/icon.ico",
-            "files": [
-                "public/icon.ico"
-            ]
-        },
-        "linux": {
-            "icon": "public/icon.png"
+            "icon": "public/icon.ico"
         }
     }
 }
