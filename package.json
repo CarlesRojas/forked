@@ -90,10 +90,13 @@
         },
         "win": {
             "target": [
-                "nsis"
+                "portable"
             ],
-            "artifactName": "${productName}-Setup-${version}.${ext}",
-            "icon": "public/icon.ico"
+            "artifactName": "${productName}.${ext}",
+            "icon": "public/icon.ico",
+            "files": [
+                "public/icon.ico"
+            ]
         },
         "linux": {
             "icon": "public/icon.png"
