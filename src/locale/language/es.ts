@@ -37,7 +37,6 @@ export const es: LanguageObject = {
             [MoveUpgrade.CHECK]: "Jaque",
             [MoveUpgrade.MATE]: "Mate",
             [MoveUpgrade.PROMOTE]: "Promoción",
-            [MoveUpgrade.EN_PASSANT]: "En Paso",
             [MoveUpgrade.CASTLE]: "Enroque",
         },
     },

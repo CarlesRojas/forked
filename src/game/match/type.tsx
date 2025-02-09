@@ -39,7 +39,6 @@ export enum MoveUpgrade {
     CHECK = "CHECK",
     MATE = "MATE",
     PROMOTE = "PROMOTE",
-    EN_PASSANT = "EN_PASSANT",
     CASTLE = "CASTLE",
 }
 

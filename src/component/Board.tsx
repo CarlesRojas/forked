@@ -5,6 +5,7 @@ import { ChessBoard } from "@/game/chess/ChessBoard";
 import { EngineMove } from "@/game/chess/stockfish/StockfishEngine";
 import { EvaluateProps } from "@/game/chess/stockfish/useStockfish";
 import { CheckState, Color, Coords, Fen, LastMove, PieceImage, SelectedSquare } from "@/game/chess/type";
+import { useScore } from "@/game/match/score";
 import { cn } from "@/lib/cn";
 import { savedChessboardAtom } from "@/state/game";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor } from "@dnd-kit/core";
@@ -24,11 +25,13 @@ interface Props {
 const Board = ({ chessBoard, evaluation }: Props) => {
     const setSavedChessBoard = useSetAtom(savedChessboardAtom);
     const [chessBoardView, setChessBoardView] = useState(chessBoard.chessBoardView);
+    const score = useScore({ chessBoard });
 
     const [selectedSquare, setSelectedSquare] = useState<SelectedSquare>({ piece: null });
     const [pieceSafeSquares, setPieceSafeSquares] = useState<Coords[]>([]);
     const [lastMove, setLastMove] = useState<LastMove | undefined>(chessBoard.lastMove);
     const [checkState, setCheckState] = useState<CheckState>(chessBoard.checkState);
+    const [scoring, setScoring] = useState<boolean>(false);
 
     const [isPromotionActive, setIsPromotionActive] = useState<boolean>(false);
     const [promotionCoords, setPromotionCoords] = useState<Coords | null>(null);
@@ -114,16 +117,14 @@ const Board = ({ chessBoard, evaluation }: Props) => {
     };
 
     const updateBoard = useCallback(
-        (prevCoords: Coords, newCoords: Coords, promotedPiece?: Fen | null) => {
+        async (prevCoords: Coords, newCoords: Coords, promotedPiece?: Fen | null) => {
             chessBoard.move(prevCoords.x, prevCoords.y, newCoords.x, newCoords.y, promotedPiece ?? null);
             setChessBoardView(chessBoard.chessBoardView);
             setLastMove(chessBoard.lastMove);
             setCheckState(chessBoard.checkState);
             unmarkMoves();
-
-            setIsEngineTurn(chessBoard.playerColor === Color.BLACK);
             setSavedChessBoard(chessBoard.serialize());
-            evaluate({ fen: chessBoard.boardAsFEN, isGameOver: chessBoard.isGameOver, turn: chessBoard.playerColor });
+            setIsEngineTurn(chessBoard.playerColor === Color.BLACK);
         },
         [chessBoard, evaluate, unmarkMoves, setSavedChessBoard],
     );
@@ -182,12 +183,22 @@ const Board = ({ chessBoard, evaluation }: Props) => {
         }
     };
 
+    const scoreMove = useCallback(async () => {
+        setScoring(true);
+        await score();
+        evaluate({ fen: chessBoard.boardAsFEN, isGameOver: chessBoard.isGameOver, turn: chessBoard.playerColor });
+    }, [chessBoard, evaluate, score]);
+
     useEffect(() => {
-        if (bestMove && isEngineTurn) {
+        if (!isEngineTurn) return;
+
+        if (!scoring) scoreMove();
+        else if (bestMove) {
             const { from, to, promotion } = bestMove;
+            setScoring(false);
             updateBoard(from, to, promotion);
         }
-    }, [bestMove, isEngineTurn, updateBoard]);
+    }, [bestMove, isEngineTurn, updateBoard, scoring, scoreMove]);
 
     const firstEvaluationDone = useRef(false);
     useEffect(() => {

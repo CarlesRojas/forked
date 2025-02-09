@@ -73,7 +73,7 @@ const GameStatus = ({ match, language }: Props) => {
                     </div>
 
                     <div className="bg-trout-800 relative flex w-full items-center justify-center px-2 lg:py-1">
-                        <p className="text-lg lg:text-3xl">{targetScore.toLocaleString(language)}</p>
+                        <p className="text-lg lg:text-3xl">{currentScore.toLocaleString(language)}</p>
                     </div>
                 </div>
 

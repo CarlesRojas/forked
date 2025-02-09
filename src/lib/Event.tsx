@@ -1,12 +1,13 @@
 "use client";
+import { Coords } from "@/game/chess/type";
 import { PropsWithChildren, createContext, useContext, useEffect, useRef } from "react";
 
 export enum Event {
-    ON_VIEW = "ON_VIEW",
+    SCORE_PIECE = "SCORE_PIECE",
 }
 
-interface EventDataMap {
-    [Event.ON_VIEW]: { path: string };
+export interface EventDataMap {
+    [Event.SCORE_PIECE]: { coords: Coords };
 }
 
 type Props = {};
@@ -22,13 +23,14 @@ export const EventContext = createContext<EventState>({
 
 const EventProvider = ({ children }: PropsWithChildren<Props>) => {
     const events = useRef<Record<Event, ((data: any) => void)[]>>({
-        [Event.ON_VIEW]: [],
+        [Event.SCORE_PIECE]: [],
     });
 
     const handlers = useRef({
         sub: <E extends Event>(event: E, callback: (data: EventDataMap[E]) => void) => {
             events.current[event].push(callback);
         },
+
         unsub: <E extends Event>(event: E, callback: (data: EventDataMap[E]) => void) => {
             const callbacks = events.current[event];
             for (var i = 0; i < callbacks.length; i++) {
