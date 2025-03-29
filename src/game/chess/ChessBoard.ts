@@ -334,7 +334,7 @@ export class ChessBoard {
             piece.hasMoved = true;
 
         const moveType = new Set<MoveType>();
-
+        console.log(moveType);
         const isPieceTaken: boolean = this._chessBoard[newX][newY] !== null;
         if (isPieceTaken) moveType.add(MoveType.CAPTURE);
 
